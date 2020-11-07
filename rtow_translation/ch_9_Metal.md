@@ -37,6 +37,73 @@ class material {
 ## 9.2 A Data Structure to Describe Ray-Object Intersections
 
 ---
+`hit_record`로 인수를 많이 사용하는 것을 피할 수 있습니다. 원하는 정보를 무엇이든지 거기에 넣을 수 있습니다. 인수를 사용할 수도 있습니다; 취항의 문제입니다. Hittables와 materials는 서로를 알아야 합니다. 그러므로 순환 참조 상태를 가지고 있습니다. C++에서는 포인터가 클래스를 가리킨다고 컴파일러에게 알려주기만 하면 됩니다. hittable 클래스 안의 "class material"는 다음과 같습니다:
+
+```cpp
+/* ************* 추가 ************ */
+#include "rtweekend.h"
+
+class material;
+/* ******************************* */
+
+struct hit_record {
+  point3 p;
+  vec3 normal;
+/* ************* 추가 ************ */
+  shared_ptr<material> mat_ptr;
+/* ******************************* */
+  double t;
+  bool front_face;
+
+  inline void set_face_normal(const ray& r, const vec3& outward_normal) {
+    front_face = dot(r.direction(), outward_normal) < 0;
+    normal = front_face ? outward_normal : -outward_normal;
+  }
+};
+```
+
+**<p align="center">Listing 42:** [hittable.h] _Hit record with added material pointer</p>_
+
+여기서 메테리얼을 설정한 것은 광선이 표면과 어떻게 상호작용하는지를 알려줍니다. `hit_record`는 여러 인수를 단지 구조체에 넣은 방식입니다. 그러므로 그룹의 형태로 인수들을 보낼 수 있습니다. 광선이 표면을 교차할 경우(예를 들어, 특정 구), `hit_record`의 메테리얼 포인터는 `main()`를 실행했을 때 설정된 구의 메테리얼 포인터를 가리키도록 설정됩니다. `ray_color()`이 `hit_record`를 가져오면 메테리얼 포인터의 멤버 함수를 호출하여 어떤 광선이 산란되었는지 알 수 있습니다.
+
+이것을 구현하기 위해, sphere 클래스에는 `hit_record`로 리턴될 메테리얼의 참조를 반드시 가지고 있어야 합니다. 아래의 하이라이트 된 줄을 보십시오:
+
+```cpp
+class sphere : public hittable {
+public:
+  sphere() {}
+/* ************* 수정 ************ */
+  sphere(point3 cen, double r, shared_ptr<material> m)
+    : center(cen), radius(r), mat_ptr(m) {};
+/* ******************************* */
+
+  virtual bool hit(
+    const ray& r, double tmin, double tmax, hit_record& rec) const override;
+
+public:
+  point3 center;
+  double radius;
+/* ************* 추가 ************ */
+  shared_ptr<material> mat_ptr;
+/* ******************************* */
+};
+
+bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
+  ...
+
+  rec.t = root;
+  rec.p = r.at(rec.t);
+  vec3 outward_normal = (rec.p - center) / radius;
+  rec.set_face_normal(r, outward_normal);
+/* ************* 추가 ************ */
+  rec.mat_ptr = mat_ptr;
+/* ******************************* */
+
+  return true;
+}
+```
+
+**<p align="center">Listing 43:** [sphere.h] _Ray-sphere intersection with added material information</p>_
 
 ---
 
