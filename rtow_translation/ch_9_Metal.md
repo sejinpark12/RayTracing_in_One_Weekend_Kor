@@ -111,6 +111,75 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 
 ---
 
+이미 구현한 램버시안(디퓨즈) 케이스의 경우, 항상 산란하고 반사율 𝑅에 의해 감쇠하거나 감쇠없이 산란하지만 광선의 1 - 𝑅을 흡수하거나 이 전략의 혼합이 될 수 있습니다. 램버시안 메테리얼의 경우 간단한 클래스를 만들 수 있습니다:
+
+```cpp
+class lambertian : public material {
+public:
+  lambertian(const color& a) : albedo(a) {}
+
+  virtual bool scatter(
+      const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+  ) const override {
+    auto scatter_direction = rec.normal + random_unit_vector();
+    scattered = ray(rec.p, scatter_direction);
+    attenuation = albedo;
+    return true;
+  }
+public:
+  color albedo;
+};
+```
+
+**<p align="center">Listing 44:** [material.h] _The lambertian material class</p>_
+
+𝑝확률로만 산란할 수 있고 감쇠는 𝑎𝑙𝑏𝑒𝑑𝑜/𝑝가 됩니다. 여러분의 선택입니다.
+
+위의 코드를 자세히 살펴보면, 문제가 발생할 가능성을 발견할 것입니다. 우리가 생성한 랜덤 단위 벡터는 법선 벡터와 정확히 반대 방향이고, 두 벡터의 합은 0이 됩니다. 결국 산란 방향 벡터로 0이 리턴됩니다. 이로 인해 나중에 잘못된 상황(infinities, NaNs)가 발생하므로 조건을 전달하기 전에 차단해야합니다.
+
+이것을 위해, 새로운 벡터 메소드 `vec3::near_zero()`를 만들 것입니다. 이 벡터는 모든 성분이 0에 아주 가까울 경우 true를 리턴합니다.
+
+```cpp
+class vec3 {
+  ...
+  bool near_zero() const {
+    // Return true if the vector is close to zero in all dimensions.
+    const auto s = 1e-8;
+    return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+  }
+  ...
+};
+```
+
+**<p align="center">Listing 45:** [vec3.h] _The vec3::near_zero() method</p>_
+
+```cpp
+class lambertian : public material {
+public:
+  lambertian(const color& a) : albedo(a) {}
+
+  virtual bool scatter(
+      const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+  ) const override {
+    auto scatter_direction = rec.normal + random_unit_vector();
+
+/* ************* 추가 ************ */
+    // Catch degenerate scatter direciton
+    if (scatter_direction.near_zero())
+      scatter_direction = rec.normal;
+/* ******************************* */
+
+    scattered = ray(rec.p, scatter_direction);
+    attenuation = albedo;
+    return true;
+  }
+public:
+  color albedo;
+};
+```
+
+**<p align="center">Listing 46:** [material.h] _Lambertian scatter, bullet-proof</p>_
+
 ---
 
 ## 9.4 Mirrored Light Reflection
