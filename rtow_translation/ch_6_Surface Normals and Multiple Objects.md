@@ -424,24 +424,6 @@ inline double degrees_to_radians(double degrees) {
 
 #include <iostream>
 
-double hit_sphere(const point3& center, double radius, const ray& r) {
-  vec3 oc = r.origin() - center;
-/* ************* 수정 ************ */
-  auto a = r.direction().length_squared();
-  auto half_b = dot(oc, r.direction());
-  auto c = oc.length_squared() - radius * radius;
-  auto discriminant = half_b * half_b - a * c;
-/* ******************************* */
-
-  if (discriminant < 0) {
-    return -1.0;
-  } else {
-/* ************* 수정 ************ */
-    return (-half_b - sqrt(discriminant)) / a;
-/* ******************************* */
-  }
-}
-
 /* ************* 수정 ************ */
 color ray_color(const ray& r, const hittable& world) {
   hit_record rec;
