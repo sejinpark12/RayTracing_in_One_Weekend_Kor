@@ -1,11 +1,14 @@
->**이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
+> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
 
 거의 모든 그래픽스 프로그램은 기하학적 벡터와 색상을 저장하는 클래스를 가지고 있습니다. 많은 시스템에서 이 벡터들은 4차원(xyz + 동차좌표 또는 RGB + 투명도)입니다. 우리가 만들려고 하는 것은 3차원 좌표계로 충분합니다. `vec3` 클래스를 사용하여 색상, 위치, 방향, 오프셋 그리고 그 이외의 모든 것을 나타냅니다. 위치에 색상을 더하는 바보같은 동작을 방지할 수 없다는 이유로 이 방식을 싫어하는 사람들도 있습니다. 타당한 지적이지만, 명백히 틀린 경우가 아니라면 이 강좌에서는 항상 "더 적은 코드"를 지향할 것이므로 `vec3` 클래스의 타입 별칭(type alias)을 `point3`과 `color`로 선언해 줍니다. 두 타입은 단지 `vec3` 클래스의 타입 별칭이기 때문에, `point3`을 받는 함수에 `color`를 입력한다고 해도 경고가 발생하지 않습니다. 의도와 사용을 분명히 하기 위해서만 두 타입 별칭을 사용합니다.
 
 ## 3.1 Variables and Methods
+
 ---
+
 `vec3` 클래스의 상단입니다.
+
 ```cpp
 #ifndef VEC3_H
 #define VEC3_H
@@ -64,13 +67,17 @@ using color = vec3;     // RGB color
 
 #endif
 ```
+
 **<p align="center">Listing 4:** [vec3<span></span>.h] vec3 class</p>
 
 여기서는 `double`형을 사용했지만, 몇몇 레이 트레이서는 `float`형을 사용합니다. 어느 쪽이든 괜찮습니다. - 여러분의 취향대로 하십시오.
 
 ---
+
 ## 3.2 vec3 Utility Functions
+
 ---
+
 vec3.h 헤더 파일의 두 번째 부분에는 벡터 유틸리티 함수들이 포함되어 있습니다.
 
 ```cpp
@@ -120,11 +127,15 @@ inline vec3 unit_vector(vec3 v) {
     return v / v.length();
 }
 ```
+
 **<p align="center">Listing 5:** [vec3<span></span>.h] vec3 utility functions</p>
 
 ---
+
 ## 3.3 Color Utility Functions
+
 ---
+
 새로 만든 `vec3` 클래스를 사용하여, 한 픽셀의 색상을 표준 출력 스트림으로 출력하는 유틸리티 함수를 만들 것입니다.
 
 ```cpp
@@ -144,9 +155,11 @@ void write_color(std::ostream &out, color pixel_color) {
 
 #endif
 ```
+
 **<p align="center">Listing 6:** [color<span></span>.h] color utility functions</p>
 
 이제 위의 헤더를 추가하여 main을 수정합니다.
+
 ```cpp
 #include "color.h"  // 추가
 #include "vec3.h"   // 추가
@@ -175,8 +188,12 @@ int main() {
     std::cerr << "\nDone.\n";
 }
 ```
+
 **<p align="center">Listing 7:** [main<span></span>.cc] Final code for the first PPM image</p>
 
 ---
 
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec3class

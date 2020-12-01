@@ -1,5 +1,5 @@
->**이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다. 
-Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
+> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
 
 저는 수년 동안 많은 그래픽스 강의를 해왔습니다. 모든 코드를 작성해야 하지만 API 없이 멋진 이미지를 얻을 수 있기 때문에 제 강의에서는 종종 레이 트레이싱을 다룹니다. 가능한 한 빨리 멋진 프로그램을 만들 수 있도록 이 책에서 저의 강의 노트를 정리할 생각입니다. 여기에서 완전한 레이 트레이서를 구현하지는 않을 것입니다. 하지만 우리가 구현할 레이 트레이서는 레이 트레이싱 기술을 영화의 주요 요소로 만든 간접 조명(Indirect lighting) 처리 기능을 가지고 있습니다. 다음 과정을 따라가십시오. 만약 흥미가 생기고 계속하고 싶다면, 여러분이 만든 레이 트레이서의 구조는 더 큰 규모의 레이 트레이서로 확장하기에 좋을 것입니다.
 </br>
@@ -11,18 +11,21 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
 </br>
 
 제가 했던 것과 다른 것도 재밌기 때문에 마지막 부분을 남겨두었습니다. 몇몇 독자들은 저희가 코드를 비교했을 때 도움이 되는 미묘한 에러들을 발견했습니다. 그러므로 코드를 타이핑하십시오. 하지만 제 코드를 확인하고 싶다면 여기에 있습니다.
+
 - https://github.com/RayTracing/raytracing.github.io/
-</br>
+  </br>
 
 어느 정도 벡터를 다루는데 익숙(내적과 벡터합 같은)하다고 가정합니다. 벡터에 대해 잘 모른다면 약간의 복습이 필요합니다. 복습이 필요하거나 처음 배운다면 아래를 확인하십시오.
+
 - [Fundamentals of Computer Graphics, Fourth Edition](https://www.amazon.com/gp/product/1482229390/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1482229390&linkCode=as2&tag=inonwe09-20&linkId=FYWORJLWAJOLB3L5)
 - [Computer Graphics: Principles and Practice (3rd Edition)](https://www.amazon.com/gp/product/0321399528/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0321399528&linkCode=as2&tag=inonwe09-20&linkId=HQRNNI5TVG2IVRMT)
 - [The Graphics Codex](http://graphicscodex.com/)
-</br>
+  </br>
 
 문제가 발생하거나 누군가에게 보여주고 싶은 멋진 일을 했다면 다음 주소로 이메일을 보내주십시오.
+
 - ptrshrl@gmail.com
-</br>
+  </br>
 
 추가 자료 및 [블로그](https://in1weekend.blogspot.com/)를 포함하여 이 책과 관련된 사이트를 유지 관리할 것입니다.
 </br>
@@ -32,5 +35,9 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
 시작합시다!
 </br>
 
----
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#overview
+--
+
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#overview

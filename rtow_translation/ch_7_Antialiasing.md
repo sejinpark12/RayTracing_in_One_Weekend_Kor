@@ -1,9 +1,10 @@
->**이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
+> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
 
 실제 카메라로 사진을 찍으면 가장자리에서 계단현상(jaggies)이 대개 발생하지 않습니다. 가장자리 픽셀에서 앞쪽과 뒤쪽의 색상이 혼합되기 때문입니다. 각 픽셀 내부의 샘플들의 평균을 활용하여 같은 효과를 구현할 수 있습니다. 계층화(stratification)는 신경 쓰지 않을 것입니다. 이것은 논란의 여지가 있지만 우리의 프로그램에서는 일반적입니다. 일부 레이 트레이서에서는 매우 중요하지만, 우리가 만드는 일반적인 레이 트레이서에서는 그다지 이점이 없으며 코드가 더 나빠집니다. 카메라 클래스를 약간 추상화할 것입니다. 그러면 나중에 더 멋진 카메라를 만들 수 있습니다.
 
 ## 7.1 Some Random Number Utilities
+
 ---
 
 필요한 한 가지는 실수 난수(real random numbers)를 리턴하는 난수발생기(random number generator)입니다. 컨벤션에 따른 0 ≤ 𝑟 < 1 범위의 실수 난수인 표준 난수(canonical random number)를 리턴하는 함수가 필요합니다. 범위에서 1이 포함되지 않음(𝑟 < 1)은 때때로 유용하게 활용할 수 있으므로 중요합니다.
@@ -42,7 +43,9 @@ inline double random_double() {
 **<p align="center">Listing 26:** [rtweekend.h] _random_double(), alternate implementation</p>_
 
 ---
+
 ## 7.2 Generating Pixels with Multiple Samples
+
 ---
 
 주어진 픽셀 안에서 몇 개의 샘플을 얻을 수 있고, 광선이 각 샘플들을 통과하도록 보냅니다. 그다음 이 광선들의 색상 평균을 구합니다.
@@ -187,4 +190,7 @@ int main() {
 
 ---
 
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#antialiasing
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#antialiasing

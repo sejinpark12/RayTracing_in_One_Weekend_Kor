@@ -49,6 +49,7 @@ color ray_color(const ray& r) {
   return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 ```
+
 **<p align="center">Listing 11:** [<span>main</span>.cc] _Rendering surface normals on a sphere</p>_
 
 다음과 같은 결과를 얻을 수 있습니다.
@@ -62,7 +63,9 @@ color ray_color(const ray& r) {
 ## 6.2 Simplifying the Ray-Sphere Intersection Code
 
 ---
+
 광선-구 방정식을 다시 한 번 봅시다.
+
 ```cpp
 double hit_sphere(const point3& center, double radius, const ray& r) {
   vec3 oc = r.origin() - center;
@@ -77,6 +80,7 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
   }
 }
 ```
+
 **<p align="center">Listing 12:** [<span>main</span>.cc] _Ray-sphere intersection code(before)</p>_
 
 첫째, 동일한 두 벡터끼리의 내적은 해당 벡터 크기의 제곱과 같다는 것을 알고 있습니다.
@@ -86,6 +90,7 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
 <p align="center"><img src="https://user-images.githubusercontent.com/19530862/95965508-f96a7280-0e44-11eb-9c75-73122cb381d5.png"></p>
 
 이 성질을 이용하여 구-교차 코드를 다음과 같이 간단하게 작성할 수 있습니다.
+
 ```cpp
 double hit_sphere(const point3& center, double radius, const ray& r) {
   vec3 oc = r.origin() - center;
@@ -105,14 +110,15 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
   }
 }
 ```
-**<p align="center">Listing 13:** [<span>main</span>.cc] _Ray-sphere intersection code(after)</p>_
 
+**<p align="center">Listing 13:** [<span>main</span>.cc] _Ray-sphere intersection code(after)</p>_
 
 ---
 
 ## 6.3 An Abstraction for Hittable Objects
 
 ---
+
 이제, 여러 개의 구를 다루어볼까요? 구의 배열을 만들고 싶은 유혹이 생기지만, 정말 깔끔한 해답은 광선이 교차할 수 있는 모든 것에 대한 "추상 클래스(abstract class)"를 만드는 것입니다. 그리고 광선이 구와 구의 리스트를 교차할 수 있도록 만듭니다. 이 클래스의 이름을 짓는 일은 난감한 작업입니다 - "객체지향(object oriented)"프로그래밍이 아니라면 클래스 이름을 "object"라고 하는 것이 좋습니다. "Surface"는 클래스 이름으로 자주 사용되지만 부피를 나타내고 싶을 경우에는 적절한 클래스 이름이 아닙니다. "hittable"라는 클래스 이름은 클래스의 멤버 함수를 강조합니다. 저는 이 클래스 이름 중 어떤 것도 마음에 들지 않지만, 클래스 이름으로 "hittable"을 사용하겠습니다.
 
 `hittable` 추상 클래스는 광선을 매개변수로 받는 hit 멤버 함수를 가집니다. 대부분의 레이 트레이서는 *t*𝑚𝑖𝑛에서 *t*𝑚𝑎𝑥까지의 교차 유효 범위를 설정하는 것이 편리하다는 것을 발견했고, 그래서 *t*𝑚𝑖𝑛 < _t_ < *t*𝑚𝑎𝑥 범위에서만 교차를 "계산"합니다. 처음 광선은 양수 *t*이지만, 보다시피 *t*𝑚𝑖𝑛에서 *t*𝑚𝑎𝑥의 범위는 설정하는 것은 코드 상의 세부적인 부분에 도움이 됩니다. 한 가지 설계적 문제는 광선이 어떤 것과 교차할 때, 법선 벡터를 계산할지 여부입니다. 더 가까운 점에서 교차할 것입니다. 그러므로 가장 가까운 점의 법선 벡터만 필요합니다. 여기서는 데이터들을 덩어리로 묶어 처리하는 방식인 구조체를 사용하여 계산할 것입니다. 아래에 추상화 클래스가 있습니다:
@@ -199,6 +205,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 ## 6.4 Front Faces Versus Back Faces
 
 ---
+
 법선 벡터에 대한 두 번째 설계 결정사항은 법선 벡터가 항상 구의 바깥 방향을 가리키는지입니다. 현재까지 살펴본 법선 벡터는 항상 구의 중심에서 교차점으로 향하는 바깥 방향의 법선 벡터입니다. 광선이 구의 바깥에서 안으로 들어오면서 교차하는 경우, 법선 벡터(바깥 방향)는 광선의 방향과 반대입니다. 광선이 구의 안에서 밖으로 나가면서 교차하는 경우, 법선 벡터(바깥 방향)는 광선의 방향과 같은 방향입니다. 아니면 다른 관점으로, 법선 벡터는 항상 광선의 반대 방향을 가리킨다고 생각할 수도 있습니다. 광선이 구의 바깥에서 안으로 들어오면서 교차한다면 법선 벡터는 바깥 방향을 가리킵니다. 하지만 만약 광선이 구 안에서 밖으로 나가면서 교차한다면 법선 벡터는 안쪽 방향을 가리킵니다.
 
 <p align="center"><img src="https://raytracing.github.io/images/fig-1.06-normal-sides.jpg"></p>
@@ -218,6 +225,7 @@ if (dot(ray_direction, outward_normal) > 0.0) {
   ...
 }
 ```
+
 **<p align="center">Listing 16:** _Comparing the ray and the normal</p>_
 
 법선 벡터가 항상 광선의 반대 방향을 가리키도록 한다면, 내적 연산으로 광선이 어느 방향에서 오는지 판별할 수 없습니다. 대신, 다음 정보를 저장해야합니다.
@@ -255,6 +263,7 @@ struct hit_record {
 /* ******************************* */
 };
 ```
+
 **<p align="center">Listing 18:** [hittable.h] _Adding front-face tracking to hit_record</p>_
 
 그 다음, 표면의 안팎을 판별하는 기능을 클래스에 추가합니다.
@@ -273,6 +282,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
   return true;
 }
 ```
+
 **<p align="center">Listing 19:** [sphere.h] _The sphere class with normal determination</p>_
 
 ---
@@ -280,6 +290,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 ## 6.5 A List of Hittable Objects
 
 ---
+
 광선이 교차할 수 있는 일반적인 객체인 `hittable`를 가지고 있습니다. 이제 `hittable`의 리스트를 저장하는 클래스를 추가할 것입니다.
 
 ```cpp
@@ -328,6 +339,7 @@ bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& re
 #endif
 
 ```
+
 **<p align="center">Listing 20:** [hittable_list.h] _The hittable_list class</p>_
 
 ---
@@ -409,6 +421,7 @@ inline double degrees_to_radians(double degrees) {
 
 #endif
 ```
+
 **<p align="center">Listing 23:** [rtweekend.h] _The rtweekend.h common header</p>_
 
 새로운 main입니다:
@@ -480,6 +493,7 @@ int main() {
   std::cerr << "\nDone.\n";
 }
 ```
+
 **<p align="center">Listing 24:** [<span>main.</span>cc] _The new main with hittables</p>_
 
 구의 표면 법선 벡터를 시각화한 이미지를 얻을 수 있습니다. 이 방법은 종종 모델의 결함이나 특징을 확인하는데 매우 좋은 방법입니다.
@@ -490,4 +504,7 @@ int main() {
 
 ---
 
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects

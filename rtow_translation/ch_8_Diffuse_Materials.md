@@ -1,10 +1,12 @@
->**이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
+> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
 
 이제, 물체와 여러 개의 픽셀 당 광선을 만들었으므로, 사실적인 메테리얼을 만들 수 있습니다. 디퓨즈(diffuse(matte)) 메테리얼부터 시작하겠습니다. 한 가지 질문은 지오메트리와 메테리얼을 다양하게 조합(메테리얼을 여러 구에 할당할 수 있습니다. 그 반대도 경우도 가능)할 것인지 아니면 지오메트리와 메테리얼을 강하게 연결(지오메트리와 메테리얼을 연결하는 것은 절차적 객체에 유용합니다.)할 것인지 입니다. 여기서는 지오메트리와 메테리얼을 구분하여 진행하겠습니다(대부분의 렌더러에서 일반적임). 하지만 그 한계점을 인지해야 합니다.
 
 ## 8.1 A Simple Diffuse Material
+
 ---
+
 빛을 발산하지 않는 디퓨즈 객체는 오직 주변의 빛만 받아들이지만, 받아들인 빛을 객체 고유의 색으로 변조합니다. 디퓨즈 표면에 반사되는 빛은 랜덤한 방향으로 반사됩니다. 만약 광선 세 개를 두 디퓨즈 표면 사이로 쏜다면, 각 빛은 랜덤한 방향으로 서로 다른 움직임을 나타낼 것입니다.
 
 <p align="center"><img src="https://raytracing.github.io/images/fig-1.08-light-bounce.jpg"></p>
@@ -73,7 +75,9 @@ color ray_color(const ray& r, const hittable& world) {
 **<p align="center">Listing 33:** [<span>main.</span>cc] _ray_color() using a random ray direction</p>_
 
 ---
+
 ## 8.2 Limiting the Number of Child Rays
+
 ---
 
 한 가지 문제점이 숨어있습니다. `ray_color` 함수는 재귀적입니다. 언제쯤 재귀 호출을 멈출까요? 어떤 것과도 교차하지 못할 때입니다. 하지만 어떤 경우에는, 스택을 파괴시킬만큼 긴 시간이 걸릴 수 있습니다. 이 상황을 방지하기 위해, 최대 재귀 깊이(maximum recursion depth)로 제한을 두어 최대 깊이에서 빛 기여도(light contribution)를 리턴하지 않습니다.
@@ -149,7 +153,9 @@ int main() {
 **<p align="center">Image 7:** _First render of a diffuse sphere</p>_
 
 ---
+
 ## 8.3 Using Gamma Correction for Accurate Color Intensity
+
 ---
 
 구 아래의 그림자를 주목하십시오. 이 이미지는 매우 어둡습니다. 구는 각 반사마다 절반의 에너지를 흡수합니다. 그러므로 구는 50% 반사체입니다. 만약 그림자가 보이지 않아도 걱정하지 마십시오. 지금부터 그 부분을 수정하겠습니다. 이 구는 굉장히 밝게 보여야 합니다(실제로는 밝은 회색). 그렇기 때문에 거의 모든 이미지 뷰어는 이미지가 "감마 보정(gamma corrected) : 0부터 1까지의 값이 바이트로 저장되기 전에 약간의 변환이 있음을 의미"된다고 가정합니다. 감마 보정을 하는 여러 이유가 있지만, 우리는 우리의 목적을 위해 그것을 인지하고만 있으면 됩니다. 첫 번째 근삿값으로 "감마 2(gamma 2)"를 사용할 수 있습니다. 색상을 1/𝑔𝑎𝑚𝑚𝑎로 제곱한다는 의미입니다. 간단한 경우인 ½는 제곱근을 의미합니다:
@@ -184,7 +190,9 @@ void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
 **<p align="center">Image 8:** _Diffuse sphere, with gamma correction</p>_
 
 ---
+
 ## 8.4 Fixing Shadow Acne
+
 ---
 
 위의 이미지에는 버그가 조금 있습니다. 반사된 광선 중 일부는 정확한 𝑡 = 0에서 교차가 아닌, 𝑡 = −0.0000001 이나 𝑡 = 0.00000001 또는 구 교차점의 부동 소수점 근삿값에서 물체와 교차합니다. 그러므로 0에 매우 가까운 교차들은 무시할 필요가 있습니다.
@@ -197,12 +205,13 @@ if (world.hit(r, 0.001, infinity, rec)) {
 
 이렇게 하면 그림자 결함(Shadow acne) 문제를 해결할 수 있습니다. 네, 정말로 Shadow acne라고 불립니다.
 
-><p align="center"><img src="https://user-images.githubusercontent.com/19530862/97144711-46850780-17a8-11eb-96f3-c47952dc1322.png"></p>
+> <p align="center"><img src="https://user-images.githubusercontent.com/19530862/97144711-46850780-17a8-11eb-96f3-c47952dc1322.png"></p>
 > <p align="center">❗그림자 결함을 수정한 이미지입니다. 원문에 없어서 추가했습니다. 그림자가 좀 더 깔끔해진 것을 확인할 수 있습니다.</p>
 
-
 ---
+
 ## 8.5 True Lambertian Reflection
+
 ---
 
 여기서 제공된 기각 메소드(rejection method)는 표면 법선 벡터를 따라 오프셋 된 단위 구의 랜덤한 점을 생성합니다.
@@ -265,7 +274,9 @@ color ray_color(const ray& r, const hittable& world, int depth) {
 이러한 차이점은 빛 광선의 일정한 산란때문이며, 더 적은 광선이 법선 벡터 방향으로 산란됩니다. 디퓨즈 오브젝트의 경우, 더 많은 빛이 카메라를 향해 반사되므로 더 밝게 나타납니다. 그림자의 경우, 더 적은 빛이 수직으로 반사되므로 큰 구의 부분 중 작은 구 바로 아래 부분이 더 밝습니다.
 
 ---
+
 ## 8.6 An Alternative Diffuse Formulation
+
 ---
 
 이 책의 초기 램버시안 계산은 이상적인 램버시안 디퓨즈의 틀린 근사라는 것이 증명되기 전까지 오랜 시간 동안 유지되었습니다. 오랜 시간 동안 오류가 수정되지 않았던 큰 이유는, 다음과 같은 작업이 어려울 수 있기 때문입니다:
@@ -326,4 +337,7 @@ color ray_color(const ray& r, const hittable& world, int depth) {
 
 ---
 
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials

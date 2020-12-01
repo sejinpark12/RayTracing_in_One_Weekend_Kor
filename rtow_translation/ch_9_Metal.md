@@ -37,6 +37,7 @@ class material {
 ## 9.2 A Data Structure to Describe Ray-Object Intersections
 
 ---
+
 `hit_record`로 인수를 많이 사용하는 것을 피할 수 있습니다. 원하는 정보를 무엇이든지 거기에 넣을 수 있습니다. 인수를 사용할 수도 있습니다; 취항의 문제입니다. Hittables와 materials는 서로를 알아야 합니다. 그러므로 순환 참조 상태를 가지고 있습니다. C++에서는 포인터가 클래스를 가리킨다고 컴파일러에게 알려주기만 하면 됩니다. hittable 클래스 안의 "class material"는 다음과 같습니다:
 
 ```cpp
@@ -200,4 +201,7 @@ public:
 
 ---
 
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#metal
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#metal

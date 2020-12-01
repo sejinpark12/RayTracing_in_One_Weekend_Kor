@@ -1,10 +1,12 @@
->**이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
+> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
 
 레이 트레이서에 오브젝트 한 개를 추가해봅시다. 구(sphere)는 광선이 오브젝트를 교차하는지 계산이 매우 간단하기 때문에 레이 트레이서에서 구가 자주 사용됩니다.
 
 ## 5.1 Ray-Sphere Intersection
+
 ---
+
 반지름이 𝑅이고 원점 중심인 구의 방정식은 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> = 𝑅<sup>2</sup>입니다. 주어진 점(x, y, z)이 구 위에 있다면, 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> = 𝑅<sup>2</sup>를 만족합니다. 주어진 점(x, y, z)이 구 안에 있다면 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> < 𝑅<sup>2</sup>를 만족합니다. 주어진 점(x, y, z)이 구 밖에 있다면 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> > 𝑅<sup>2</sup>를 만족합니다.
 
 점(𝐶<sub>𝑥</sub>, 𝐶<sub>𝑦</sub>, 𝐶<sub>𝑧</sub>)가 구의 중심이라면 구의 방정식은 다음과 같습니다:
@@ -13,7 +15,7 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
 
 그래픽스에서는 거의 항상, 공식이 벡터 형식으로 표현되기를 원합니다. 그래서 `vec3` 클래스에는 내부적으로 x/y/z가 존재합니다. 중심 𝐂 = (𝐶<sub>𝑥</sub>, 𝐶<sub>𝑦</sub>, 𝐶<sub>𝑧</sub>)에서 점 𝐏 = (𝑥, 𝑦, 𝑧)까지의 벡터는 (𝐏 − 𝐂)입니다. 그러므로 다음 식이 성립합니다.
 
- ![image2](https://user-images.githubusercontent.com/19530862/95719080-49610200-0caa-11eb-925e-fb3ce9a63861.png)
+![image2](https://user-images.githubusercontent.com/19530862/95719080-49610200-0caa-11eb-925e-fb3ce9a63861.png)
 
 벡터 형태의 구의 방정식은 다음과 같습니다:
 
@@ -42,8 +44,11 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
 > 실수 해가 2개 존재한다면 광선이 구를 통과하여 두 점에서 교차한다.
 
 ---
+
 ## 5.2 Creating Our First Raytraced Image
+
 ---
+
 아래와 같이 하드코딩한다면, 광선이 z 축의 -1에 위치한 작은 구를 교차하면 픽셀에 빨간색을 표시하도록 테스트할 수 있습니다.
 
 ```cpp
@@ -68,6 +73,7 @@ color ray_color(const ray& r) {
   return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 ```
+
 **<p align="center">Listing 10:** [<span>main</span>.cc] _Rendering a red sphere</p>_
 
 다음과 같은 결과를 얻을 수 있습니다.
@@ -82,4 +88,7 @@ color ray_color(const ray& r) {
 
 ---
 
-#### 출처 https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere
+## 출처
+
+**Ray Tracing in One Weekend - Peter Shirley**
+https://raytracing.github.io/books/RayTracingInOneWeekend.html#addingasphere
