@@ -15,7 +15,7 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
 - **[Ch.8 Diffuse Materials](https://github.com/psj3205/RayTracing_in_One_Weekend_Kor/blob/main/rtow_translation/ch_8_Diffuse_Materials.md)**
 - **Ch.9 Metal(작성중...)**
 - **Ch.10 Dielectrics**
-- **Ch.11 Positionable Camera**
+- **[Ch.11 Positionable Camera](https://github.com/psj3205/RayTracing_in_One_Weekend_Kor/blob/main/rtow_translation/ch_11_Positionable_Camera.md)**
 - **Ch.12 Defocus Blur**
 - **Ch.13 Where Next?**
 
