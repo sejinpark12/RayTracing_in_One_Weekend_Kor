@@ -1,9 +1,8 @@
-> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+# 9. Diffuse Materials
 
 이제, 물체와 여러 개의 픽셀 당 광선을 만들었으므로, 사실적인 메테리얼을 만들 수 있습니다. 디퓨즈(diffuse(matte)) 메테리얼부터 시작하겠습니다. 한 가지 질문은 지오메트리와 메테리얼을 다양하게 조합(메테리얼을 여러 구에 할당할 수 있습니다. 그 반대도 경우도 가능)할 것인지 아니면 지오메트리와 메테리얼을 강하게 연결(지오메트리와 메테리얼을 연결하는 것은 절차적 객체에 유용합니다.)할 것인지 입니다. 여기서는 지오메트리와 메테리얼을 구분하여 진행하겠습니다(대부분의 렌더러에서 일반적임). 하지만 그 한계점을 인지해야 합니다.
 
-## 8.1 A Simple Diffuse Material
+## 9.1 A Simple Diffuse Material
 
 ---
 
@@ -76,7 +75,7 @@ color ray_color(const ray& r, const hittable& world) {
 
 ---
 
-## 8.2 Limiting the Number of Child Rays
+## 9.2 Limiting the Number of Child Rays
 
 ---
 
@@ -154,7 +153,7 @@ int main() {
 
 ---
 
-## 8.3 Using Gamma Correction for Accurate Color Intensity
+## 9.3 Using Gamma Correction for Accurate Color Intensity
 
 ---
 
@@ -191,7 +190,7 @@ void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
 
 ---
 
-## 8.4 Fixing Shadow Acne
+## 9.4 Fixing Shadow Acne
 
 ---
 
@@ -210,7 +209,7 @@ if (world.hit(r, 0.001, infinity, rec)) {
 
 ---
 
-## 8.5 True Lambertian Reflection
+## 9.5 True Lambertian Reflection
 
 ---
 
@@ -275,7 +274,7 @@ color ray_color(const ray& r, const hittable& world, int depth) {
 
 ---
 
-## 8.6 An Alternative Diffuse Formulation
+## 9.6 An Alternative Diffuse Formulation
 
 ---
 

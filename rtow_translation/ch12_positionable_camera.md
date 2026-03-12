@@ -1,9 +1,8 @@
-> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+# 12. Positionable Camera
 
 유전체와 마찬가지로 카메라는 디버깅하기가 어렵습니다. 그래서 저는 항상 점진적으로 코드를 작성합니다. 첫 번째, 조절할 수 있는 시야(field of view : fov)를 적용합니다. fov는 문을 통해 보는 각도입니다. 우리가 다루는 이미지는 정사각형이 아니기 때문에, fov의 수직길이와 수평길이가 다릅니다. 저는 항상 수직 fov를 사용합니다. 또한 저는 주로 생성자 안에서 각도를 지정하여 라디안으로 변환합니다 - 개인적인 취향입니다.
 
-## 11.1 Camera Viewing Geometry
+## 12.1 Camera Viewing Geometry
 
 ---
 
@@ -86,7 +85,7 @@ int main() {
 
 ---
 
-## 11.2 Positioning and Orienting the Camera
+## 12.2 Positioning and Orienting the Camera
 
 ---
 

@@ -1,7 +1,6 @@
-> **이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
-> Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
+# 10. Metal
 
-## 9.1 An Abstract Class for Materials
+## 10.1 An Abstract Class for Materials
 
 ---
 
@@ -34,7 +33,7 @@ class material {
 
 ---
 
-## 9.2 A Data Structure to Describe Ray-Object Intersections
+## 10.2 A Data Structure to Describe Ray-Object Intersections
 
 ---
 
@@ -108,7 +107,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 
 ---
 
-## 9.3 Modeling Light Scatter and Reflectance
+## 10.3 Modeling Light Scatter and Reflectance
 
 ---
 
@@ -183,19 +182,19 @@ public:
 
 ---
 
-## 9.4 Mirrored Light Reflection
+## 10.4 Mirrored Light Reflection
 
 ---
 
 ---
 
-## 9.5 A Scene with Metal Spheres
+## 10.5 A Scene with Metal Spheres
 
 ---
 
 ---
 
-## 9.6 Fuzzy Reflection
+## 10.6 Fuzzy Reflection
 
 ---
 
