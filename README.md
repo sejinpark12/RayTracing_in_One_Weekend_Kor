@@ -11,10 +11,8 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
     - [2.1 The PPM Image Format](./rtow_translation/2_output_an_image.md#21-the-ppm-image-format)
     - [2.2 Creating an Image File](./rtow_translation/2_output_an_image.md#22-creating-an-image-file)
     - [2.3 Adding a Progress Indicator](./rtow_translation/2_output_an_image.md#23-adding-a-progress-indicator)
-- **[3. The vec3 Class](./rtow_translation/3_the_vec3_class.md)**
-    - [3.1 Variables and Methods](./rtow_translation/3_the_vec3_class.md#31-variables-and-methods)
-    - [3.2 vec3 Utility Functions](./rtow_translation/3_the_vec3_class.md#32-vec3-utility-functions)
-    - [3.3 Color Utility Functions](./rtow_translation/3_the_vec3_class.md#33-color-utility-functions)
+- **[3. The vec3 Class](./rtow_translation/3_the_vec3_class.md)**✅
+    - [3.1 Color Utility Functions](./rtow_translation/3_the_vec3_class.md#31-color-utility-functions)
 - **[4. Rays, a Simple Camera, and Background](./rtow_translation/4_rays_a_simple_camera_and_background.md)**
     - [4.1 The ray Class](./rtow_translation/4_rays_a_simple_camera_and_background.md#41-the-ray-class)
     - [4.2 Sending Rays Into the Scene](./rtow_translation/4_rays_a_simple_camera_and_background.md#42-sending-rays-into-the-scene)
