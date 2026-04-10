@@ -13,7 +13,7 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
     - [2.3 Adding a Progress Indicator](./rtow_translation/02_output_an_image.md#23-adding-a-progress-indicator)
 - **[3. The vec3 Class](./rtow_translation/03_the_vec3_class.md)** ✅
     - [3.1 Color Utility Functions](./rtow_translation/03_the_vec3_class.md#31-color-utility-functions)
-- **[4. Rays, a Simple Camera, and Background](./rtow_translation/04_rays_a_simple_camera_and_background.md)**
+- **[4. Rays, a Simple Camera, and Background](./rtow_translation/04_rays_a_simple_camera_and_background.md)** ✅
     - [4.1 The ray Class](./rtow_translation/04_rays_a_simple_camera_and_background.md#41-the-ray-class)
     - [4.2 Sending Rays Into the Scene](./rtow_translation/04_rays_a_simple_camera_and_background.md#42-sending-rays-into-the-scene)
 - **[5. Adding a Sphere](./rtow_translation/05_adding_a_sphere.md)**
