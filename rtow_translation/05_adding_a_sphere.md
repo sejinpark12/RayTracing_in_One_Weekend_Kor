@@ -1,79 +1,111 @@
 # 5. Adding a Sphere
 
-레이 트레이서에 오브젝트 한 개를 추가해봅시다. 구(sphere)는 광선이 오브젝트를 교차하는지 계산이 매우 간단하기 때문에 레이 트레이서에서 구가 자주 사용됩니다.
+이제, 레이 트레이서에 오브젝트 한 개를 추가해봅시다. 가장 먼저 추가할 수 있는 오브젝트는 일반적으로 구(Sphere)입니다. 광선이 구에 충돌하는지 판별하는 계산은 비교적 간단하기 때문입니다.
 
 ## 5.1 Ray-Sphere Intersection
 
 ---
 
-반지름이 𝑅이고 원점 중심인 구의 방정식은 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> = 𝑅<sup>2</sup>입니다. 주어진 점(x, y, z)이 구 위에 있다면, 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> = 𝑅<sup>2</sup>를 만족합니다. 주어진 점(x, y, z)이 구 안에 있다면 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> < 𝑅<sup>2</sup>를 만족합니다. 주어진 점(x, y, z)이 구 밖에 있다면 𝑥<sup>2</sup> + 𝑦<sup>2</sup> + 𝑧<sup>2</sup> > 𝑅<sup>2</sup>를 만족합니다.
+반지름이 $r$ 이고 원점 중심인 구의 방정식은 중요한 방정식입니다.
 
-점(𝐶<sub>𝑥</sub>, 𝐶<sub>𝑦</sub>, 𝐶<sub>𝑧</sub>)가 구의 중심이라면 구의 방정식은 다음과 같습니다:
+$$ x^2 + y^2 + z^2 = r^2 $$
 
-![image1](https://user-images.githubusercontent.com/19530862/95719074-482fd500-0caa-11eb-80ed-b6ddeeef09e3.png)
+이 식은 이렇게도 생각할 수 있습니다. 어떤 점 $(x,y,z)$ 가 구의 표면에 위치한다면 $x^2 + y^2 + z^2 = r^2$ 를 만족합니다. 어떤 점 $(x,y,z)$ 가 구의 내부에 위치한다면 $x^2 + y^2 + z^2 < r^2$ 를 만족하고, 어떤 점 $(x,y,z)$ 가 구의 외부에 위치한다면 $x^2 + y^2 + z^2 > r^2$ 를 만족합니다.
 
-그래픽스에서는 거의 항상, 공식이 벡터 형식으로 표현되기를 원합니다. 그래서 `vec3` 클래스에는 내부적으로 x/y/z가 존재합니다. 중심 𝐂 = (𝐶<sub>𝑥</sub>, 𝐶<sub>𝑦</sub>, 𝐶<sub>𝑧</sub>)에서 점 𝐏 = (𝑥, 𝑦, 𝑧)까지의 벡터는 (𝐏 − 𝐂)입니다. 그러므로 다음 식이 성립합니다.
+구의 중심이 임의의 점 $(C_x, C_y, C_z)$ 에 위치한다면 구의 방정식은 더 복잡해집니다.
 
-![image2](https://user-images.githubusercontent.com/19530862/95719080-49610200-0caa-11eb-925e-fb3ce9a63861.png)
+$$ (C_x - x)^2 + (C_y - y)^2 + (C_z - z)^2 = r^2 $$
 
-벡터 형태의 구의 방정식은 다음과 같습니다:
+그래픽스에서는 거의 항상 수식을 벡터 형태로 표현하고자 합니다. 그러면 $x$/$y$/$z$ 같은 항들을 모두 간단히 `vec3` 클래스로 나타낼 수 있기 때문입니다. 점 $\mathbf{P} = (x,y,z)$ 에서 중심 $\mathbf{C} = (C_x, C_y, C_z)$ 까지의 벡터는 $(\mathbf{C} - \mathbf{P})$ 로 표현합니다.
 
-![image3](https://user-images.githubusercontent.com/19530862/95719082-49f99880-0caa-11eb-99a3-e19285f45c4e.png)
+내적(dot product)의 정의를 사용하면 다음과 같습니다.
 
-"점 𝐏가 이 방정식을 만족한다면 점 𝐏는 구 위에 위치한다"라고 이해할 수 있습니다. 우리는 광선 𝐏(𝑡) = 𝐀 + 𝑡𝐛 가 구를 교차하는지 알고 싶습니다. 광선이 구를 교차한다면, 구의 방정식을 만족하는 𝐏(𝑡)의 𝑡가 존재합니다.
+$$ (\mathbf{C} - \mathbf{P}) \cdot (\mathbf{C} - \mathbf{P})
+  = (C_x - x)^2 + (C_y - y)^2 + (C_z - z)^2
+$$
 
-![image4](https://user-images.githubusercontent.com/19530862/95719102-5120a680-0caa-11eb-98ed-e041d88242bf.png)
+그렇다면 벡터 형태의 구의 방정식을 아래와 같이 나타낼 수 있습니다.
 
-광선 𝐏(𝑡)의 완전한 형태로 풀어쓰면:
+$$ (\mathbf{C} - \mathbf{P}) \cdot (\mathbf{C} - \mathbf{P}) = r^2 $$
 
-![image5](https://user-images.githubusercontent.com/19530862/95719100-4fef7980-0caa-11eb-8a47-a35fc77d2d42.png)
+이것을 "이 방정식을 만족하는 모든 점 $\mathbf{P}$ 는 구 표면에 위치한다"라고 생각할 수 있습니다. 우리는 광선 $\mathbf{P}(t) = \mathbf{Q} + t\mathbf{d}$ 가 구와 충돌하는지 알고 싶습니다. 만약 광선이 구와 충돌한다면, 구의 방정식을 만족하는 $\mathbf{P}(t)$ 에 대한 $t$ 가 존재합니다. 그러므로 아래의 식이 참이 되는 $t$ 를 찾는 것입니다.
 
-벡터 대수 규칙은 여기서 우리가 원하는 전부입니다. 좌항을 풀어서 다시 정리하고 𝑟<sup>2</sup>을 좌항으로 이항시키면:
+$$ (\mathbf{C} - \mathbf{P}(t)) \cdot (\mathbf{C} - \mathbf{P}(t)) = r^2 $$
 
-![image6](https://user-images.githubusercontent.com/19530862/95719104-52ea6a00-0caa-11eb-9b1d-75264e851c8e.png)
+$\mathbf{P}(t)$ 를 전개한 형태로 바꾸면 아래와 같이 됩니다.
 
-방정식에 있는 벡터와 𝑟은 모두 상수로 알고 있는 값이며 아직 모르는 값은 𝑡입니다. 이 방정식은 고등학교 수학 시간에 봤던 이차방정식입니다. 𝑡의 해를 구해보면 해의 루트 부분이 양수인 경우(2개의 실수 해 존재), 음수인 경우(실수 해 없음), 0인 경우(1개의 실수 해 존재) 이렇게 3가지 경우가 가능합니다. 그래픽스에서는 거의 항상, 대수학이 매우 직접적으로 기하학과 연관되어 있습니다.
+$$ (\mathbf{C} - (\mathbf{Q} + t \mathbf{d}))
+    \cdot (\mathbf{C} - (\mathbf{Q} + t \mathbf{d})) = r^2 $$
 
-<p align="center"><img src="https://raytracing.github.io/images/fig-1.04-ray-sphere.jpg"></p>
+내적의 왼쪽 괄호 안에 벡터 세 개와 오른쪽 괄호 안에 벡터 세 개가 존재하므로 내적을 전개하면 아홉 개의 항이 생깁니다. 물론 하나하나 모두 전개할 수 있지만, 그렇게까지 할 필요는 없습니다. 여기서 구하려는 것은 $t$ 에 대한 해이므로, $t$ 가 포함된 항과 포함되지 않은 항으로 분리하여 식을 정리합니다.
 
-**<p align="center">Figure 4**: _Ray-sphere intersection results</p>_
+$$ (-t \mathbf{d} + (\mathbf{C} - \mathbf{Q})) \cdot (-t \mathbf{d} + (\mathbf{C} - \mathbf{Q}))
+    = r^2
+$$
 
-> ❗위의 이차방정식의 실수 해가 존재하지 않는다면 광선이 구와 교차하지 않는다.
-> 실수 해가 1개 존재한다면 광선이 구의 한 점에서 접한다.
-> 실수 해가 2개 존재한다면 광선이 구를 통과하여 두 점에서 교차한다.
+이제 벡터 대수의 규칙에 따라 내적을 전개합니다.
 
----
+$$ t^2 \mathbf{d} \cdot \mathbf{d}
+    - 2t \mathbf{d} \cdot (\mathbf{C} - \mathbf{Q})
+    + (\mathbf{C} - \mathbf{Q}) \cdot (\mathbf{C} - \mathbf{Q}) = r^2
+$$
+
+반지름 제곱을 좌변으로 이항시키면 아래의 식이 됩니다.
+
+$$ t^2 \mathbf{d} \cdot \mathbf{d}
+    - 2t \mathbf{d} \cdot (\mathbf{C} - \mathbf{Q})
+    + (\mathbf{C} - \mathbf{Q}) \cdot (\mathbf{C} - \mathbf{Q}) - r^2 = 0
+$$
+
+이 방정식이 정확히 어떤 방정식인지 한번에 알아보기는 어렵지만, 방정식 안의 벡터와 $r$ 은 모두 상수이고 이미 값을 알고 있습니다. 더욱이, 벡터들은 내적 연산으로 인해 숫자 하나인 스칼라로 바뀝니다. 미지수는 $t$ 뿐이고, 방정식에 $t^2$ 항이 존재하므로 이차방정식이라는 것을 알 수 있습니다. 이차방정식의 근의 공식을 사용하여 이차방정식 $ax^2 + bx + c = 0$ 의 해를 구할 수 있습니다.
+
+$$ \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
+
+따라서 광선-구 교차 방정식에서 $t$ 에 대한 풀이는 다음과 같은 $a$, $b$, $c$ 값을 가집니다.
+
+$$ a = \mathbf{d} \cdot \mathbf{d} $$
+$$ b = -2 \mathbf{d} \cdot (\mathbf{C} - \mathbf{Q}) $$
+$$ c = (\mathbf{C} - \mathbf{Q}) \cdot (\mathbf{C} - \mathbf{Q}) - r^2 $$
+
+위의 내용들을 바탕으로 $t$ 의 해를 구할 수 있습니다. 루트 안의 판별식은 양수(실수 해가 두 개), 음수(실수 해가 없음), 0(실수 해가 하나)가 될 수 있습니다. 그래픽스에서는 대수적인 결과가 거의 항상 기하학적인 의미와 직접적으로 대응되어 있습니다. 그러므로 다음과 같은 결과를 얻을 수 있습니다.
+
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.05-ray-sphere.jpg"></p>
+
+**<p align="center">Figure 5**: _Ray-sphere intersection results</p>_
 
 ## 5.2 Creating Our First Raytraced Image
 
 ---
 
-아래와 같이 하드코딩한다면, 광선이 z 축의 -1에 위치한 작은 구를 교차하면 픽셀에 빨간색을 표시하도록 테스트할 수 있습니다.
+
+
+위의 내용을 프로그램에 하드코딩한다면, z축의 -1에 작은 구를 위치시키고 광선이 구와 교차하면 픽셀에 빨간색을 칠하도록 테스트할 수 있습니다.
 
 ```cpp
-/* ************* 추가 ************ */
+///////////////////////// 추가 ///////////////////////////////
 bool hit_sphere(const point3& center, double radius, const ray& r) {
-  vec3 oc = r.origin() - center;
+  vec3 oc = center - r.origin();
   auto a = dot(r.direction(), r.direction());
-  auto b = 2.0 * dot(oc, r.direction());
+  auto b = -2.0 * dot(r.direction(), oc);
   auto c = dot(oc, oc) - radius * radius;
   auto discriminant = b * b - 4 * a * c;
-  return (discriminant > 0);
+  return (discriminant >= 0);
 }
-/* ******************************* */
+/////////////////////////////////////////////////////////////
 
 color ray_color(const ray& r) {
-/* ************* 추가 ************ */
+///////////////////////// 추가 ///////////////////////////////
   if (hit_sphere(point3(0, 0, -1), 0.5, r))
     return color(1, 0, 0);
-/* ******************************* */
+/////////////////////////////////////////////////////////////
+
   vec3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
-  return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
+  auto a = 0.5 * (unit_direction.y() + 1.0);
+  return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
 }
 ```
 
-**<p align="center">Listing 10:** [<span>main</span>.cc] _Rendering a red sphere</p>_
+**<p align="center">Listing 11:** [<span>main</span>.cc] _Rendering a red sphere</p>_
 
 다음과 같은 결과를 얻을 수 있습니다.
 
@@ -81,9 +113,7 @@ color ray_color(const ray& r) {
 
 **<p align="center">Image 3:** _A simple red sphere</p>_
 
-아직 많이 부족해 보입니다(셰이딩, 반사광 그리고 오브젝트 개수와 같은). 하지만 처음 시작에서 절반 정도 지나왔습니다! 주의할 점이 한 가지 있습니다. 우리는 광선이 모두 구를 교차하는지를 테스트한 것입니다. 하지만 𝑡가 음수인 경우도 동작합니다. 만약 구의 중심을 𝑧 = +1(구가 카메라의 뒤에 위치)로 옮긴다고 해도 기존의 𝑧 = -1 위치에 구가 있는 경우와 완전히 같은 이미지가 출력됩니다. 이것은 우리가 의도한 기능이 아닙니다! 다음에 이러한 문제들을 수정할 것입니다.
-
-> ❗𝑡 < 0이면 광선 방향의 반대 방향이 된다
+현재 구현에는 많은 요소가 빠져 있습니다(셰이딩, 반사광 그리고 오브젝트 개수와 같은). 하지만 이제 처음 상태보다 절반 정도 완성된 상태에 더 가까워졌습니다! 한 가지 주의할 점이 있습니다. 여기서는 광선이 구와 교차하는지 확인하기 위해 이차방정식의 해가 존재하는지를 확인하고 있습니다. 따라서 $t$ 가 음수인 경우에도 해로 인정하고 있습니다. 그러므로 구의 중심을 $z = +1$ 로 바꿔도 구의 중심이 $z = -1$ 인 이미지와 완전히 동일한 이미지가 출력됩니다. 그 이유는 이 방식이 _카메라 앞에 있는_ 오브젝트와 _카메라 뒤에 있는_ 오브젝트를 구분하지 못하기 때문입니다. 이건 기능이 아닙니다! 이런 문제들은 뒤에서 수정하겠습니다.
 
 ---
 

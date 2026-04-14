@@ -6,17 +6,17 @@
 >**이 글은 Peter Shirley의 [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)를 번역한 것입니다.
 Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌으로 번역을 해보려고 합니다. 영어가 서툴러 번역이 잘못되었을 수도 있으므로 잘못된 부분을 발견하신다면 지적해 주시면 감사하겠습니다.**
 
-- **[1. Overview](./rtow_translation/01_overview.md)** ✅
-- **[2. Output an Image](./rtow_translation/02_output_an_image.md)** ✅
+- ✅ **[1. Overview](./rtow_translation/01_overview.md)**
+- ✅ **[2. Output an Image](./rtow_translation/02_output_an_image.md)**
     - [2.1 The PPM Image Format](./rtow_translation/02_output_an_image.md#21-the-ppm-image-format)
     - [2.2 Creating an Image File](./rtow_translation/02_output_an_image.md#22-creating-an-image-file)
     - [2.3 Adding a Progress Indicator](./rtow_translation/02_output_an_image.md#23-adding-a-progress-indicator)
-- **[3. The vec3 Class](./rtow_translation/03_the_vec3_class.md)** ✅
+- ✅ **[3. The vec3 Class](./rtow_translation/03_the_vec3_class.md)**
     - [3.1 Color Utility Functions](./rtow_translation/03_the_vec3_class.md#31-color-utility-functions)
-- **[4. Rays, a Simple Camera, and Background](./rtow_translation/04_rays_a_simple_camera_and_background.md)** ✅
+- ✅ **[4. Rays, a Simple Camera, and Background](./rtow_translation/04_rays_a_simple_camera_and_background.md)**
     - [4.1 The ray Class](./rtow_translation/04_rays_a_simple_camera_and_background.md#41-the-ray-class)
     - [4.2 Sending Rays Into the Scene](./rtow_translation/04_rays_a_simple_camera_and_background.md#42-sending-rays-into-the-scene)
-- **[5. Adding a Sphere](./rtow_translation/05_adding_a_sphere.md)**
+- ✅ **[5. Adding a Sphere](./rtow_translation/05_adding_a_sphere.md)** 
     - [5.1 Ray-Sphere Intersection](./rtow_translation/05_adding_a_sphere.md#51-ray-sphere-intersection)
     - [5.2 Creating Our First Raytraced Image](./rtow_translation/05_adding_a_sphere.md#52-creating-our-first-raytraced-image)
 - **[6. Surface Normals and Multiple Objects](./rtow_translation/06_surface_normals_and_multiple_objects.md)**
