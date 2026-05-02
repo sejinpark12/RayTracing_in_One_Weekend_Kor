@@ -163,7 +163,7 @@ int main() {
   for (int j = 0; j < image_height; j++) {
     std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
     for (int i = 0; i < image_width; i++) {
-///////////////////////// 추가 ///////////////////////////////
+///////////////////////// 수정 ///////////////////////////////
       auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
       auto ray_direction = pixel_center - camera_center;
       ray r(camera_center, ray_direction);
@@ -201,7 +201,7 @@ $$ \mathit{blendedValue} = (1-a)\cdot\mathit{startValue} + a\cdot\mathit{endValu
 
 
 color ray_color(const ray& r) {
-///////////////////////// 추가 ///////////////////////////////
+///////////////////////// 수정 ///////////////////////////////
   vec3 unit_direction = unit_vector(r.direction());
   auto a = 0.5 * (unit_direction.y() + 1.0);
 
