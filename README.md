@@ -28,7 +28,7 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
     - [6.6 Some New C++ Features](./rtow_translation/06_surface_normals_and_multiple_objects.md#66-some-new-c-features)
     - [6.7 Common Constants and Utility Functions](./rtow_translation/06_surface_normals_and_multiple_objects.md#67-common-constants-and-utility-functions)
     - [6.8 An Interval Class](./rtow_translation/06_surface_normals_and_multiple_objects.md#68-an-interval-class)
-- **[7. Moving Camera Code Into Own Class](./rtow_translation/07_moving_camera_code_into_own_class.md)**
+- ✅ **[7. Moving Camera Code Into Own Class](./rtow_translation/07_moving_camera_code_into_own_class.md)**
 - **[8. Antialiasing](./rtow_translation/08_antialiasing.md)**
     - [8.1 Some Random Number Utilities](./rtow_translation/08_antialiasing.md#81-some-random-number-utilities)
     - [8.2 Generating Pixels with Multiple Samples](./rtow_translation/08_antialiasing.md#82-generating-pixels-with-multiple-samples)
