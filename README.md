@@ -32,13 +32,12 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
 - ✅ **[8. Antialiasing](./rtow_translation/08_antialiasing.md)**
     - [8.1 Some Random Number Utilities](./rtow_translation/08_antialiasing.md#81-some-random-number-utilities)
     - [8.2 Generating Pixels with Multiple Samples](./rtow_translation/08_antialiasing.md#82-generating-pixels-with-multiple-samples)
-- **[9. Diffuse Materials](./rtow_translation/09_diffuse_materials.md)**
+- ✅ **[9. Diffuse Materials](./rtow_translation/09_diffuse_materials.md)**
     - [9.1 A Simple Diffuse Material](./rtow_translation/09_diffuse_materials.md#91-a-simple-diffuse-material)
     - [9.2 Limiting the Number of Child Rays](./rtow_translation/09_diffuse_materials.md#92-limiting-the-number-of-child-rays)
-    - [9.3 Using Gamma Correction for Accurate Color Intensity](./rtow_translation/09_diffuse_materials.md#93-using-gamma-correction-for-accurate-color-intensity)
-    - [9.4 Fixing Shadow Acne](./rtow_translation/09_diffuse_materials.md#94-fixing-shadow-acne)
-    - [9.5 True Lambertian Reflection](./rtow_translation/09_diffuse_materials.md#95-true-lambertian-reflection)
-    - [9.6 An Alternative Diffuse Formulation](./rtow_translation/09_diffuse_materials.md#96-an-alternative-diffuse-formulation)
+    - [9.3 Fixing Shadow Acne](./rtow_translation/09_diffuse_materials.md#93-fixing-shadow-acne)
+    - [9.4 True Lambertian Reflection](./rtow_translation/09_diffuse_materials.md#94-true-lambertian-reflection)
+    - [9.5 Using Gamma Correction for Accurate Color Intensity](./rtow_translation/09_diffuse_materials.md#95-using-gamma-correction-for-accurate-color-intensity)
 - **[10. Metal](./rtow_translation/10_metal.md)**
     - [10.1 An Abstract Class for Materials](./rtow_translation/10_metal.md#101-an-abstract-class-for-materials)
     - [10.2 A Data Structure to Describe Ray-Object Intersections](./rtow_translation/10_metal.md#102-a-data-structure-to-describe-ray-object-intersections)

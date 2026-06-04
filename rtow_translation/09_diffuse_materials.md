@@ -1,151 +1,164 @@
 # 9. Diffuse Materials
-
-이제, 물체와 여러 개의 픽셀 당 광선을 만들었으므로, 사실적인 메테리얼을 만들 수 있습니다. 디퓨즈(diffuse(matte)) 메테리얼부터 시작하겠습니다. 한 가지 질문은 지오메트리와 메테리얼을 다양하게 조합(메테리얼을 여러 구에 할당할 수 있습니다. 그 반대도 경우도 가능)할 것인지 아니면 지오메트리와 메테리얼을 강하게 연결(지오메트리와 메테리얼을 연결하는 것은 절차적 객체에 유용합니다.)할 것인지 입니다. 여기서는 지오메트리와 메테리얼을 구분하여 진행하겠습니다(대부분의 렌더러에서 일반적임). 하지만 그 한계점을 인지해야 합니다.
+이제 오브젝트도 있고 픽셀당 여러 개의 광선을 쏘는 안티엘리어싱도 갖추었기 때문에, 사실적으로 보이는 머티리얼을 만들 수 있습니다. 먼저 디퓨즈 머티리얼부터 시작하겠습니다. 디퓨즈 머티리얼은 _매트_(_matte_) 라고도 부릅니다. 한 가지 설계적 고민은 지오메트리와 머티리얼을 이것저것 섞어서 조합할지 아니면 지오메트리와 머티리얼을 강하게 결합할지입니다. 전자의 방식에서는 하나의 머티리얼을 여러 개의 구에 적용하거나 그 반대도 가능합니다. 후자의 방식은 지오메트리와 머티리얼이 서로 연결된 절차적 객체에서 유용할 수 있습니다. 여기서는 전자의 방식을 따르겠습니다. 대부분의 렌더러에서 일반적으로 이 방식을 사용합니다. 그러나 다른 방식들도 있다는 것을 꼭 알아두세요.
 
 ## 9.1 A Simple Diffuse Material
+스스로 빛을 방출하지 않는 디퓨즈 오브젝트는 단순히 주변의 색을 받아서 그대로 띠는 것이 아니라, 실제로는 받은 주변 색에 자기 고유의 색을 반영하여 색을 띱니다. 디퓨즈 표면에서 반사되는 빛은 랜덤한 방향으로 반사됩니다. 그래서 두 디퓨즈 표면 사이 틈으로 세 개의 광선을 쏘면 각 광선은 서로 다른 랜덤한 방향으로 향하게 됩니다.
 
----
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.09-light-bounce.jpg"></p>
 
-빛을 발산하지 않는 디퓨즈 객체는 오직 주변의 빛만 받아들이지만, 받아들인 빛을 객체 고유의 색으로 변조합니다. 디퓨즈 표면에 반사되는 빛은 랜덤한 방향으로 반사됩니다. 만약 광선 세 개를 두 디퓨즈 표면 사이로 쏜다면, 각 빛은 랜덤한 방향으로 서로 다른 움직임을 나타낼 것입니다.
+**<p align="center">Figure 9:** _Light ray bounces</p>_
 
-<p align="center"><img src="https://raytracing.github.io/images/fig-1.08-light-bounce.jpg"></p>
+또한 광선은 반사되지 않고 흡수될 수도 있습니다. 광선이 더 많이 흡수될수록 표면은 더 어둡게 보입니다. 사실, 랜덤 방향을 생성할 수 있는 알고리즘이라면 어떤 것이든, 표면을 매트하게 보이도록 할 수 있습니다. 가장 직관적인 방법부터 시작해 보겠습니다. 광선이 모든 방향으로 동일한 확률로 랜덤하게 반사되는 표면을 사용하는 방식입니다. 이 머티리얼에서는, 표면에 충돌하는 광선은 표면으로부터 반사되는 어떤 방향으로든 동일한 확률로 반사됩니다.
 
-**<p align="center">Figure 8:** _Light ray bounces</p>_
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.10-random-vec-horizon.jpg"></p>
 
-그 빛들은 반사보다는 흡수되는 경향이 있습니다. 더 어두운 표면에서는 흡수가 보다 많이 발생합니다(어두운게 그 이유입니다!). 랜덤한 방향을 지정하는 어떤 알고리즘으로도 무광(matte) 표면을 구현할 수 있습니다. 이것을 구현하는 가장 간단한 방법 중 하나는 이상적인 디퓨즈 표면과 정확히 동일하다고 알려져있습니다.(저는 수학적으로 이상적인 램버시안(Lambertian)과 유사한 방법을 사용했습니다.)
+**<p align="center">Figure 10:** _Equal reflection above the horizon</p>_
 
-(독자 Vassilen Chizhov님이 위의 방법은 말 그대로 유사한 방법이고 부정확하다는 것을 증명했습니다. 이상적인 램버시안의 올바른 표현은 그다지 많은 작업을 요구하지 않으며, 이 장의 마지막에서 다룰 것입니다.)
-
-표면의 교차점 𝑝에 접하는 2개의 단위구(unit sphere)가 존재합니다. 두 구의 중점은 (𝐏 + 𝐧)과 (𝐏 − 𝐧)이며 𝐧은 표면의 법선 벡터입니다. 중점이 (𝐏 − 𝐧)인 구는 표면의 안쪽에 위치하는 반면, 중점이 (𝐏 + 𝐧)인 구는 표면의 바깥에 위치한다고 생각할 수 있습니다. 표면에 접하는 단위구 중 광선 원점과 같은 쪽에 있는 구를 선택합니다. 선택한 단위구 안의 랜덤한 점 𝐒를 지정하고 교차점 𝐏에서 점 𝐒로 광선을 보냅니다(이 벡터는 (𝐒 − 𝐏)입니다.):
-
-<p align="center"><img src="https://raytracing.github.io/images/fig-1.09-rand-vec.jpg"></p>
-
-**<p align="center">Figure 9:** _Generating a random diffuse bounce ray</p>_
-
-단위구 안의 랜덤한 점을 지정하는 방법이 필요합니다. 일반적으로 가장 쉬운 알고리즘을 사용할 것입니다: 기각 메소드(Rejection method). 먼저, x, y, z 좌표의 범위가 모두 -1부터 +1인 단위 정육면체 안에서 랜덤한 점을 지정합니다. 만약 점이 구의 바깥에 위치한다면 그 점을 기각(Rejection)하고 다시 시도합니다.
+이런 매우 직관적인 머티리얼이 디퓨즈 머티리얼의 가장 단순한 형태입니다. 그리고 뒤에서 구현할 좀 더 정확한 방식을 적용하기 전까지는, 실제로도 많은 초기 레이 트레이싱 논문들에서 이 디퓨즈 머티리얼을 사용했습니다. 현재 코드에는 아직 광선을 랜덤하게 반사하는 로직이 없으므로 벡터 유틸리티 헤더에 몇 가지 함수를 추가해야 합니다. 첫 번째로 필요한 것은 임의의 랜덤 벡터를 생성하는 기능입니다.
 
 ```cpp
 class vec3 {
-public:
-  ...
-  inline static vec3 random() {
-    return vec3(random_double(), random_double(), random_double());
-  }
+  public:
+    ...
 
-  inline static vec3 random(double min, double max) {
-    return vec3(random_double(min, max), random_double(min, max),
-    random_double(min, max));
-  }
+    double length_squared() const {
+      return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+    }
+
+///////////////////////// 추가 /////////////////////////////////////////////////////////////////////
+    static vec3 random() {                                                                       //
+      return vec3(random_double(), random_double(), random_double());                            //
+    }                                                                                            //
+                                                                                                 //
+    static vec3 random(double min, double max) {                                                 //
+      return vec3(random_double(min, max), random_double(min, max), random_double(min, max));    //
+    }                                                                                            //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+};
 ```
 
-**<p align="center">Listing 31:** [vec3.h] _vec3 random utility functions</p>_
+**<p align="center">Listing 47:** [vec3.h] _vec3 random utility functions</p>_
+
+랜덤 벡터를 어떻게 다뤄야 랜덤 벡터의 끝점이 반구의 표면 위에만(반구 표면 방향) 오도록 할 수 있을지 생각해야 합니다. 이를 위한 해석적 방법(analytical method)들이 있지만, 사실 이해하기 꽤 복잡하고 구현도 상당히 복잡합니다. 대신, 일반적으로 가장 쉬운 알고리즘인 기각법(rejection method)을 사용하겠습니다. 기각법은 원하는 기준을 만족하는 샘플이 나올 때까지 랜덤 샘플을 반복적으로 생성하는 방식으로 동작합니다. 다시 말해서, 기준에 맞는 샘플 하나를 찾을 때까지 그렇지 못한 샘플을 계속 버리라는 의미입니다.
+
+기각법을 사용하여 반구 표면 위의 랜덤 벡터를 생성하는 방법은 여러 가지가 있습니다. 그렇지만, 여기서는 목적상 가장 단순한 방법을 선택하겠습니다. 그 방법은 다음과 같습니다.
+
+1. 단위 구 내부의 랜덤 벡터 하나를 생성합니다.
+2. 이 벡터를 정규화하여 벡터의 끝을 구 표면까지 연장합니다.
+3. 정규화된 벡터가 잘못된 반구로 향한다면 벡터의 방향을 반대로 뒤집습니다.
+
+먼저, 단위 구 내부에 위치한 랜덤 벡터를 생성하기 위해서 기각법을 사용합니다. 단위 구는 반지름이 1인 구입니다. 단위 구를 감싸고 있는 정육면체 내부에서 임의의 점 하나를 선택합니다. 다시 말해서, 이 점의 $x$, $y$, $z$ 성분들의 범위는 $[-1, +1]$ 입니다. 이 점이 단위 구 외부에 있다면, 단위 구 내부 또는 단위 구 표면에 위치하는 점이 나올 때까지 점을 생성합니다. 
+
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.11-sphere-vec.jpg"></p>
+
+**<p align="center">Figure 11:** _Two vectors were rejected before finding a good one (pre-normalization)</p>_
+
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.12-sphere-unit-vec.jpg"></p>
+
+**<p align="center">Figure 12:** _The accepted random vector is normalized to produce a unit vector</p>_
+
+다음은 이 함수의 첫 번째 구현입니다.
 
 ```cpp
-vec3 random_in_unit_sphere() {
-  while (true) {
-    auto p = vec3::random(-1, 1);
-    if (p.length_squared() >= 1) continue;
-    return p;
-  }
-}
-```
-
-**<p align="center">Listing 32:** [vec3.h] _The random_in_unit_sphere() function</p>_
-
-새로운 랜덤 방향 생성기를 사용하기 위해 `ray_color()` 함수를 업데이트합니다.
-
-```cpp
-color ray_color(const ray& r, const hittable& world) {
-  hit_record rec;
-
-  if (world.hit(r, 0, infinity, rec)) {
-/* ************* 수정 ************ */
-    point3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5 * ray_color(ray(rec.p, target - rec.p), world);
-/* ******************************* */
-  }
-
-  vec3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
-  return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
-}
-```
-
-**<p align="center">Listing 33:** [<span>main.</span>cc] _ray_color() using a random ray direction</p>_
-
----
-
-## 9.2 Limiting the Number of Child Rays
-
----
-
-한 가지 문제점이 숨어있습니다. `ray_color` 함수는 재귀적입니다. 언제쯤 재귀 호출을 멈출까요? 어떤 것과도 교차하지 못할 때입니다. 하지만 어떤 경우에는, 스택을 파괴시킬만큼 긴 시간이 걸릴 수 있습니다. 이 상황을 방지하기 위해, 최대 재귀 깊이(maximum recursion depth)로 제한을 두어 최대 깊이에서 빛 기여도(light contribution)를 리턴하지 않습니다.
-
-```cpp
-/* ************* 수정 ************ */
-color ray_color(const ray& r, const hittable& world, int depth) {
-/* ******************************* */
-  hit_record rec;
-
-/* ************* 추가 ************ */
-  // 광선 반사 제한을 초과한다면, 빛이 더 이상 모이지 않습니다.
-  if (depth <= 0)
-    return color(0, 0, 0);
-/* ******************************* */
-
-  if (world.hit(r, 0, infinity, rec)) {
-    point3 target = rec.p + rec.normal + random_in_unit_sphere();
-/* ************* 수정 ************ */
-    return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
-/* ******************************* */
-  }
-
-  vec3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
-  return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
-}
-
 ...
 
-int main() {
+inline vec3 unit_vector(const vec3& v) {
+  return v / v.length();
+}
 
-  // Image
-  const auto aspect_ratio = 16.0 / 9.0;
-  const int image_width = 400;
-  const int image_height = static_cast<int>(image_width / aspect_ratio);
-  const int samples_per_pixel = 100;
-/* ************* 추가 ************ */
-  const int max_depth = 50;
-/* ******************************* */
+///////////////////////// 추가 //////////////////////
+inline vec3 random_unit_vector() {                //
+  while (true) {                                  //
+    auto p = vec3::random(-1, 1);                 //
+    auto lensq = p.length_squared();              //
+    if (lensq <= 1)                               //
+      return p / sqrt(lensq);                     //
+  }                                               //
+}                                                 //
+////////////////////////////////////////////////////
+```
 
-  ...
-  // Render
+**<p align="center">Listing 48:** [vec3.h] _The random\_unit\_vector() function, version one</p>_
 
-  std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+안타깝게도, 이 코드에서는 부동소수점 때문에 발생하는 누수 문제를 해결해야 합니다. 부동소수점 숫자의 정밀도는 유한하기 때문에, 매우 작은 숫자를 제곱하면 언더플로우가 발생하여 0이 될 수 있습니다. 따라서 벡터 끝점의 세 성분이 모두 충분히 작아 구의 중심에 매우 가깝다면, 벡터의 크기는 0이 될 것이고 이 벡터를 정규화하면 $[\pm\infty, \pm\infty, \pm\infty]$ 의 잘못된 벡터가 됩니다. 이런 문제를 해결하기 위해서, 구 중심 근처의 "블랙홀"(언더플로우가 발생할 수 있는 위치) 안에 있는 점들도 사용하지 않을 것입니다. 배정밀도(double precision, 64-bit float)를 사용하면 $10^{-160}$ 보다 큰 값은 안전하게 다룰 수 있습니다.
 
-  for (int j = image_height - 1; j >= 0; --j) {
-    std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-    for (int i = 0; i < image_width; ++i) {
-      color pixel_color(0, 0, 0);
-      for (int s = 0; s < samples_per_pixel; ++s) {
-        auto u = (i + random_double()) / (image_width - 1);
-        auto v = (j + random_double()) / (image_height - 1);
-        ray r = cam.get_ray(u, v);
-/* ************* 수정 ************ */
-        pixel_color += ray_color(r, world, max_depth);
-/* ******************************* */
-      }
-      write_color(std::cout, pixel_color, samples_per_pixel);
-    }
+다음은 이를 반영하여 더 안전하게 만든 함수입니다.
+
+```cpp
+inline vec3 random_unit_vector() {
+  while (true) {
+    auto p = vec3::random(-1, 1);
+    auto lensq = p.length_squared();
+///////////////////////// 수정 //////////////////////
+    if (1e-160 < lensq && lensq <= 1)             //
+////////////////////////////////////////////////////
+      return p / sqrt(lensq);
   }
-
-  std::cerr << "\nDone.\n";
 }
 ```
 
-**<p align="center">Listing 34:** [<span>main.</span>cc] _ray_color() with depth limiting</p>_
+**<p align="center">Listing 49:** [vec3.h] _The random\_unit\_vector() function, version two</p>_
 
-다음과 같은 이미지를 얻을 수 있습니다:
+이제 랜덤 단위 벡터를 만들었으니, 표면 법선 벡터와 비교하여 올바른 반구에 위치하는지 판별할 수 있습니다.
+
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.13-surface-normal.jpg"></p>
+
+**<p align="center">Figure 13:** _The normal vector tells us which hemisphere we need</p>_
+
+올바른 반구에 랜덤 벡터가 위치하는지 판별하기 위해서 표면 법선 벡터와 랜덤 벡터의 내적을 구합니다. 내적 값이 양수라면, 랜덤 벡터는 올바른 반구에 위치합니다. 내적 값이 음수라면, 랜덤 벡터를 반대 방향으로 뒤집어야 합니다.
+
+```cpp
+...
+
+inline vec3 random_unit_vector() {
+  while (true) {
+    auto p = vec3::random(-1, 1);
+    auto lensq = p.length_squared();
+    if (1e-160 < lensq && lensq <= 1)
+      return p / sqrt(lensq);
+  }
+}
+
+///////////////////////// 추가 ////////////////////////////////////////////////////////
+inline vec3 random_on_hemisphere(const vec3& normal) {                              //
+  vec3 on_unit_sphere = random_unit_vector();                                       //
+  if (dot(on_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal    //
+    return on_unit_sphere;                                                          //
+  else                                                                              //
+    return -on_unit_sphere;                                                         //
+}                                                                                   //
+//////////////////////////////////////////////////////////////////////////////////////
+```
+
+**<p align="center">Listing 50:** [vec3.h] _The random\_on\_hemisphere() function</p>_
+
+만약 광선이 어떤 머티리얼에 반사된 뒤에도 광선이 가지고 있던 색을 100% 유지한다면, 그 머티리얼은 _흰색_ 이라고 합니다. 만약 광선이 어떤 머티리얼에 반사되어 광선이 가지고 있던 색을 0% 유지한다면, 그 머티리얼은 _검은색_ 이라고 합니다. 새로운 디퓨즈 머티리얼의 첫 번째 예시로, `ray_color` 함수가 한 번 반사된 광선 색의 50%만 반환하도록 설정하겠습니다. 그러면 회색이 나올 것입니다.
+
+```cpp
+class camera {
+  ...
+  private:
+    ...
+    color ray_color(const ray& r, const hittable& world) const {
+      hit_record rec;
+
+      if (world.hit(r, interval(0, infinity), rec)) {
+///////////////////////// 수정 ///////////////////////////////////////
+        vec3 direction = random_on_hemisphere(rec.normal);         //
+        return 0.5 * ray_color(ray(rec.p, direction), world);      //
+/////////////////////////////////////////////////////////////////////
+      }
+
+      vec3 unit_direction = unit_vector(r.direction());
+      auto a = 0.5 * (unit_direction.y() + 1.0);
+      return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+    }
+};
+```
+
+**<p align="center">Listing 51:** [camera.h] _ray\_color() using a random ray direction</p>_
+
+...실제로도 꽤 괜찮은 회색 구들이 렌더링됩니다.
 
 <p align="center"><img src="https://raytracing.github.io/images/img-1.07-first-diffuse.png"></p>
 
@@ -153,186 +166,276 @@ int main() {
 
 ---
 
-## 9.3 Using Gamma Correction for Accurate Color Intensity
+## 9.2 Limiting the Number of Child Rays
+
+여기에는 문제가 될 수 있는 부분이 하나 있습니다. `ray_color` 함수가 재귀함수라는 점에 주목하세요. 재귀는 언제 멈출까요? 광선이 더 이상 어떤 물체와도 충돌하지 못할 때 입니다. 다만 어떤 경우에 따라서는 그때까지 스택 오버플로우를 일으킬 정도로 오래 걸릴 수도 있습니다. 이 문제를 해결하기 위해, 최대 깊이에 도달하면 빛 기여를 0으로 하여 최대 재귀 깊이를 제한하겠습니다. 
+
+```cpp
+class camera {
+  public:
+    double aspect_ratio = 1.0;     // Ratio of image width over height
+    int    image_width = 100;      // Rendered image width in pixel count
+    int    samples_per_pixel = 10; // Count of random samples for each pixel
+///////////////////////// 추가 //////////////////////////////////////////////////////
+    int    max_depth = 10;         // Maximum number of ray bounces into scene    //
+////////////////////////////////////////////////////////////////////////////////////
+
+    void render(const hittable& world) {
+      initialize();
+
+      std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+      for (int j = 0; j < image_height; j++) {
+        std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
+        for (int i = 0; i < image_width; i++) {
+          color pixel_color(0, 0, 0);
+          for (int sample = 0; sample < samples_per_pixel; sample++) {
+            ray r = get_ray(i, j);
+///////////////////////// 수정 //////////////////////////////////////////////
+            pixel_color += ray_color(r, max_depth, world);                //
+////////////////////////////////////////////////////////////////////////////
+          }
+          write_color(std::cout, pixel_samples_scale * pixel_color);
+        }
+      }
+
+      std::clog << "\rDone.                 \n";
+    }
+    ...
+  private:
+    ...
+///////////////////////// 수정 ///////////////////////////////////////////////////
+    color ray_color(const ray& r, int depth, const hittable& world) const {    //
+      // If we've exceeded the ray bounce limit, no more light is gathered.    //
+      if (depth <= 0)                                                          //
+        return color(0, 0, 0);                                                 //
+/////////////////////////////////////////////////////////////////////////////////
+
+      hit_record rec;
+
+      if (world.hit(r, interval(0, infinity), rec)) {
+        vec3 direction = random_on_hemisphere(rec.normal);
+///////////////////////// 수정 ///////////////////////////////////////////////////
+        return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);       //
+/////////////////////////////////////////////////////////////////////////////////
+      }
+
+      vec3 unit_direction = unit_vector(r.direction());
+      auto a = 0.5 * (unit_direction.y() + 1.0);
+      return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+    }
+};
+```
+
+**<p align="center">Listing 52:** [camera.h] _camera::ray\_color() with depth limiting</p>_
+
+새로 추가한 깊이 제한 변수(max_depth)를 사용하도록 main() 함수를 수정합니다.
+
+```cpp
+int main() {
+  ...
+
+  camera cam;
+
+  cam.aspect_ratio      = 16.0 / 9.0;
+  cam.image_width       = 400;
+  cam.samples_per_pixel = 100;
+///////////////////////// 추가 ////////////////////////
+  cam.max_depth         = 50;                       //
+//////////////////////////////////////////////////////
+
+  cam.render(world);
+}
+```
+
+**<p align="center">Listing 53:** [main<span></span>.cc] _Using the new ray depth limiting</p>_
+
+이런 아주 단순한 씬에서는 기본적으로 같은 결과가 나와야 합니다.
+
+<p align="center"><img src="https://raytracing.github.io/images/img-1.08-second-diffuse.png"></p>
+
+**<p align="center">Image 8:** _Second render of a diffuse sphere with limited bounces</p>_
 
 ---
 
-구 아래의 그림자를 주목하십시오. 이 이미지는 매우 어둡습니다. 구는 각 반사마다 절반의 에너지를 흡수합니다. 그러므로 구는 50% 반사체입니다. 만약 그림자가 보이지 않아도 걱정하지 마십시오. 지금부터 그 부분을 수정하겠습니다. 이 구는 굉장히 밝게 보여야 합니다(실제로는 밝은 회색). 그렇기 때문에 거의 모든 이미지 뷰어는 이미지가 "감마 보정(gamma corrected) : 0부터 1까지의 값이 바이트로 저장되기 전에 약간의 변환이 있음을 의미"된다고 가정합니다. 감마 보정을 하는 여러 이유가 있지만, 우리는 우리의 목적을 위해 그것을 인지하고만 있으면 됩니다. 첫 번째 근삿값으로 "감마 2(gamma 2)"를 사용할 수 있습니다. 색상을 1/𝑔𝑎𝑚𝑚𝑎로 제곱한다는 의미입니다. 간단한 경우인 ½는 제곱근을 의미합니다:
+## 9.3 Fixing Shadow Acne
+
+여기에는 해결해야 할 숨은 버그가 하나 더 있습니다. 광선은 표면과 교차할 때, 교차점을 정확하게 계산하려고 시도합니다. 하지만 안타깝게도 이 계산은 부동소수점 반올림 오차에 영향을 받기 쉽고, 이 오차로 인해 교차점이 아주 약간씩 어긋날 수 있습니다. 이 말은 표면에서 랜덤하게 산란되어 나가는 다음 광선의 시작점이 표면과 완벽하게 딱 맞닿아 있을 가능성이 낮다는 의미입니다. 그 시작점은 표면 바로 위에 있을 수도 있고, 바로 아래에 있을 수도 있습니다. 만약 광선의 시작점이 표면 바로 아래에 있다면, 광선은 동일한 표면과 다시 교차할 수 있습니다. 이는 광선이 찾는 가장 가까운 표면을 hit 함수가 계산해 낸 부동소수점 근삿값인 $t=0.00000001$ 같은 거의 0에 가까운 값에서 찾게 된다는 뜻입니다. 이 문제를 해결하는 가장 간단한 방법은 계산된 교차점에 아주 가까운 hit들을 단순히 무시하는 것입니다.
 
 ```cpp
-void write_color(std::ostream &out, color pixel_color, int samples_per_pixel) {
+class camera {
+  ...
+  private:
+    ...
+    color ray_color(const ray& r, int depth, const hittable& world) const {
+      // If we've exceeded the ray bounce limit, no more light is gathered.
+      if (depth <= 0)
+        return color(0, 0, 0);
+
+      hit_record rec;
+
+///////////////////////// 수정 //////////////////////////////////
+      if (world.hit(r, interval(0.001, infinity), rec)) {     //
+////////////////////////////////////////////////////////////////
+        vec3 direction = random_on_hemisphere(rec.normal);
+        return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+      }
+
+      vec3 unit_direction = unit_vector(r.direction());
+      auto a = 0.5 * (unit_direction.y() + 1.0);
+      return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+    }
+};
+```
+
+**<p align="center">Listing 54:** [camera.h] _Calculating reflected ray origins with tolerance</p>_
+
+이렇게 하면 그림자 여드름(shadow acne) 문제가 사라집니다. 네, 실제로 사용되는 용어입니다. 결과는 다음과 같습니다.
+
+<p align="center"><img src="https://raytracing.github.io/images/img-1.09-no-acne.png"></p>
+
+**<p align="center">Image 9:** _Diffuse sphere with no shadow acne</p>_
+
+---
+
+## 9.4 True Lambertian Reflection
+
+위의 방식으로 반사 광선을 반구 전체에 고르게 산란시키면 멋진 부드러운 디퓨즈 모델을 만들 수 있습니다. 하지만 더 나은 방법이 분명히 존재합니다. _램버시안_ 분포(_Lambertian_ distribution)를 사용하면 실제의 디퓨즈 오브젝트를 더 정확하게 표현할 수 있습니다. 이 분포는 반사된 광선을 $\cos(\phi)$ 에 비례하여 산란시킵니다. 여기서 $\phi$ 는 반사된 광선과 표면 법선 벡터 사이의 각도입니다. 이 말은 반사 광선이 표면 법선 벡터 근처 방향으로 산란될 가능성이 높고, 법선에서 멀어지는 방향으로 반사될 가능성은 낮다는 의미입니다. 비균일 램버시안 분포는 이전의 균일 산란 모델보다 실제 세계의 머티리얼 반사를 더 잘 모델링합니다.
+
+법선 벡터에 랜덤 단위 벡터를 더함으로써 램버시안 분포를 만들 수 있습니다. 표면 교차점에는 교차점 $\mathbf{p}$ 와 표면 법선 벡터 $\mathbf{n}$ 이 존재합니다. 교차점에서 표면은 정확히 두 면(앞면, 뒷면)을 가지므로, 그 교차점에 접할 수 있는 단위 구는 오직 두 개뿐입니다. 각 면마다 하나씩 있는 셈입니다. 이 두 단위 구는 반지름만큼 표면에서 떨어져 있으며, 단위 구의 반지름은 정확히 1입니다.
+
+한 구는 표면의 법선 벡터 ($\mathbf{n}$) 방향으로 떨어져 있고, 다른 한 구는 그 반대인 ($\mathbf{-n}$) 방향으로 떨어져 있습니다. 그 결과, 교차점에서 단위 구 두 개가 표면에 _딱_ 접해 있는 상태가 됩니다. 이로 인해, 한 구의 중심은 $(\mathbf{P} + \mathbf{n})$ 이고 다른 한 구의 중심은 $(\mathbf{P} - \mathbf{n})$ 이 됩니다. 중심이 $(\mathbf{P} - \mathbf{n})$ 인 구는 표면의 안쪽에 있는 것으로 보고, 반면 중심이 $(\mathbf{P} + \mathbf{n})$ 인 구는 표면의 바깥쪽에 있는 것으로 봅니다.
+
+광선의 원점과 같은 쪽에 있는 면에 접한 단위 구를 선택합니다. 그리고 단위 구 위에서 랜덤으로 점 $\mathbf{S}$ 를 뽑고, 교차점 $\mathbf{P}$ 에서 점 $\mathbf{S}$ 를 향해 광선을 보냅니다. 그 결과, 방향 벡터는 $(\mathbf{S}-\mathbf{P})$ 가 됩니다. 
+
+<p align="center"><img src="https://raytracing.github.io/images/fig-1.14-rand-unitvec.jpg"></p>
+
+**<p align="center">Figure 14:** _Randomly generating a vector according to Lambertian distribution</p>_
+
+실제로 바뀌는 부분은 많지 않습니다.
+
+```cpp
+class camera {
+  ...
+  color ray_color(const ray& r, int depth, const hittable& world) const {
+    // If we've exceeded the ray bounce limit, no more light is gathered.
+    if (depth <= 0)
+      return color(0, 0, 0);
+
+    hit_record rec;
+
+    if (world.hit(r, interval(0.001, infinity), rec)) {
+///////////////////////// 수정 //////////////////////////////////////////////
+      vec3 direction = rec.normal + random_unit_vector();                 //
+////////////////////////////////////////////////////////////////////////////
+      return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+    }
+
+    vec3 unit_direction = unit_vector(r.direction());
+    auto a = 0.5 * (unit_direction.y() + 1.0);
+    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+  }
+};
+```
+
+**<p align="center">Listing 55:** [camera.h] _ray\_color() with replacement diffuse</p>_
+
+렌더링하면 이전과 비슷한 이미지가 렌더링됩니다.
+
+<p align="center"><img src="https://raytracing.github.io/images/img-1.10-correct-lambertian.png"></p>
+
+**<p align="center">Image 10:** _Correct rendering of Lambertian spheres</p>_
+
+두 개의 구로 구성된 씬은 너무 단순해서 여기서 두 디퓨즈 방식의 차이점을 구분하는 것은 어렵습니다. 하지만 그렇더라도 중요한 두 가지 시각적 차이점은 확인할 수 있습니다.
+
+1. 변경 후에 그림자가 더 뚜렷해졌습니다.
+2. 변경 후에 두 구 모두 하늘의 영향을 받아 푸른색을 띱니다.
+
+이 두 변화 모두 광선이 덜 균일하게 산란되어 발생합니다. 즉, 더 많은 광선이 법선 벡터 방향으로 산란되기 때문입니다. 이 말은 디퓨즈 오브젝트에서는 카메라 쪽으로 반사되는 빛이 더 적기 때문에 더 어둡게 보인다는 의미입니다. 그림자의 경우에는 더 많은 빛이 표면 바로 위쪽 방향(법선 벡터 방향)으로 반사되기 때문에 구 아래 영역이 더 어두워집니다.
+
+일상에서 보는 흔한 오브젝트들 중에 완벽하게 디퓨즈한 것들은 많지 않습니다. 그래서 이런 오브젝트들이 빛 아래에서 어떻게 보이는지에 대한 시각적 직관은 부정확할 수 있습니다. 앞으로 씬이 더 복잡해짐에 따라, 여기서 소개된 서로 다른 디퓨즈 렌더러들을 서로 바꿔 가며 사용해 보는 것이 좋습니다. 대부분의 흥미로운 씬에는 많은 디퓨즈 머티리얼이 포함되어 있습니다. 서로 다른 디퓨즈 방식이 씬의 라이팅에 어떤 영향을 주는지 이해함으로써 의미 있는 통찰을 얻을 수 있습니다.
+
+## 9.5 Using Gamma Correction for Accurate Color Intensity
+
+구 아래의 그림자에 주목하세요. 이 이미지는 매우 어둡습니다. 하지만 구들은 각 반사마다 에너지의 절반만 흡수하므로 이 구들은 50% 반사체입니다. 따라서 구들은 꽤 밝게 보여야 하고 현실에서는 연한 회색 정도로 보이는 것이 자연스럽습니다. 하지만 렌더링 결과는 더 어둡게 보입니다. 디퓨즈 머티리얼의 전체 밝기 영역을 단계적으로 살펴보면, 이 어둡게 보이는 현상을 더 명확하게 이해할 수 있습니다. 먼저 `ray_color` 함수의 반사율을 `0.5` (50%)에서 `0.1` (10%)로 낮춰 설정하겠습니다.
+
+```cpp
+class camera {
+  ...
+  color ray_color(const ray& r, int depth, const hittable& world) const {
+    // If we've exceeded the ray bounce limit, no more light is gathered.
+    if (depth <= 0)
+      return color(0, 0, 0);
+
+    hit_record rec;
+
+    if (world.hit(r, interval(0.001, infinity), rec)) {
+      vec3 direction = rec.normal + random_unit_vector();
+///////////////////////// 수정 ////////////////////////////////////////////////
+      return 0.1 * ray_color(ray(rec.p, direction), depth - 1, world);      //
+//////////////////////////////////////////////////////////////////////////////
+    }
+
+    vec3 unit_direction = unit_vector(r.direction());
+    auto a = 0.5 * (unit_direction.y() + 1.0);
+    return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+  }
+};
+```
+
+**<p align="center">Listing 56:** [camera.h] _ray\_color() with 10% reflectance</p>_
+
+새로 설정한 10% 반사율로 렌더링을 합니다. 그리고 30% 반사율로 설정하고 다시 렌더링을 합니다. 50%, 70%, 90%까지 렌더링을 반복합니다. 원하는 사진 편집기를 사용하여 렌더링 이미지들을 왼쪽에서 오른쪽 순서로 겹쳐 볼 수 있습니다. 그러면 설정된 영역에서 밝기가 증가하는 아주 멋진 시각적 결과를 얻을 수 있습니다. 다음의 이미지가 지금까지 작업해 온 것입니다.
+
+<p align="center"><img src="https://raytracing.github.io/images/img-1.11-linear-gamut.png"></p>
+
+**<p align="center">Image 11:** _The gamut of our renderer so far</p>_
+
+이미지를 자세히 살펴보거나 컬러 피커를 사용해 보면, 50% 반사율 렌더링(가운데 결과)이 흰색과 검은색의 중간값인 중간 회색(middle-gray)으로 보기에는 너무 어두운 것을 눈치챌 수 있어야 합니다. 실제로 70% 반사체가 중간 회색에 더 가깝습니다. 그 이유는 대부분의 컴퓨터 프로그램은 이미지가 파일에 저장되기 전에 감마 보정(gamma-corrected) 된다고 가정하기 때문입니다. 이 말은 0부터 1까지의 값들이 바이트로 저장되기 전에 특정 변환이 적용된다는 의미입니다. 변환이 적용되지 않은 데이터로 구성된 이미지는 _선형 공간_ (_linear space_)에 있다고 하고, 반면에 변환이 적용된 이미지는 _감마 공간_ (_gamma space_)에 있다고 합니다. 여러분이 사용하는 이미지 뷰어는 감마 공간의 이미지를 전제로 할 가능성이 큽니다. 하지만 여기서 렌더링한 이미지는 선형 공간에 있는 이미지이기 때문에 이미지가 실제보다 어둡게 보이는 것입니다.
+
+왜 감마 공간으로 이미지를 저장하는 것이 좋은지에 대한 여러 가지 이유가 있지만, 여기서는 그냥 그런 것이 있다는 정도로만 알고 넘어가겠습니다. 이미지 데이터를 감마 공간으로 변환하여 이미지 뷰어에서 더 정확하게 보이도록 하겠습니다. 단순한 근사인 "gamma 2" 변환을 사용하겠습니다. 이것은 감마 공간에서 선형 공간으로 변환시킬 때 사용하는 거듭제곱 지수에 해당합니다. 여기서는 반대로 선형 공간에서 감마 공간으로 변환해야 하므로 "gamma 2"의 역을 적용해야 합니다. 다시 말해 지수가 $1/\mathit{gamma}$ 가 되고, 결국 제곱근을 취하는 것과 같습니다. 음수 값이 들어오는 경우에도 안전하게 처리되도록 해야 합니다.
+
+```cpp
+///////////////////////// 추가 //////////////////////////////////
+inline double linear_to_gamma(double linear_component)        //
+{                                                             //
+  if (linear_component > 0)                                   //
+    return std::sqrt(linear_component);                       //
+                                                              //
+  return 0;                                                   //
+}                                                             //
+////////////////////////////////////////////////////////////////
+
+void write_color(std::ostream& out, const color& pixel_color) {
   auto r = pixel_color.x();
   auto g = pixel_color.y();
   auto b = pixel_color.z();
 
-/* ************* 수정 ************ */
-  // Divide the color by the number of samples and gamma-correct for gamma=2.0
-  auto scale = 1.0 / samples_per_pixel;
-  r = sqrt(scale * r);
-  g = sqrt(scale * g);
-  b = sqrt(scale * b);
-/* ******************************* */
+///////////////////////// 추가 //////////////////////////////////
+  // Apply a linear to gamma transform for gamma 2            //
+  r = linear_to_gamma(r);                                     //
+  g = linear_to_gamma(g);                                     //
+  b = linear_to_gamma(b);                                     //
+////////////////////////////////////////////////////////////////
 
-  // Write the translated [0, 255] value of each color component.
-  out << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
-    << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
-    << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << '\n';
+  // Translate the [0, 1] component values to the byte range [0, 255].
+  static const interval intensity(0.000, 0.999);
+  int rbyte = int(256 * intensity.clamp(r));
+  int gbyte = int(256 * intensity.clamp(g));
+  int bbyte = int(256 * intensity.clamp(b));
+
+  // Write out the pixel color components.
+  out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
 }
 ```
 
-**<p align="center">Listing 35:** [color.h] _write_color(), with gamma correction</p>_
+**<p align="center">Listing 57:** [color.h] _write\_color(), with gamma correction</p>_
 
-원하는 밝은 회색의 이미지를 얻을 수 있습니다:
+감마 보정을 적용하면, 밝기 변화가 더 일관되게 나타납니다.
 
-<p align="center"><img src="https://raytracing.github.io/images/img-1.08-gamma-correct.png"></p>
+<p align="center"><img src="https://raytracing.github.io/images/img-1.12-gamma-gamut.png"></p>
 
-**<p align="center">Image 8:** _Diffuse sphere, with gamma correction</p>_
-
----
-
-## 9.4 Fixing Shadow Acne
-
----
-
-위의 이미지에는 버그가 조금 있습니다. 반사된 광선 중 일부는 정확한 𝑡 = 0에서 교차가 아닌, 𝑡 = −0.0000001 이나 𝑡 = 0.00000001 또는 구 교차점의 부동 소수점 근삿값에서 물체와 교차합니다. 그러므로 0에 매우 가까운 교차들은 무시할 필요가 있습니다.
-
-```cpp
-if (world.hit(r, 0.001, infinity, rec)) {
-```
-
-**<p align="center">Listing 36:** [<span>main.</span>cc] _Calculating reflected ray origins with tolerance</p>_
-
-이렇게 하면 그림자 결함(Shadow acne) 문제를 해결할 수 있습니다. 네, 정말로 Shadow acne라고 불립니다.
-
-> <p align="center"><img src="https://user-images.githubusercontent.com/19530862/97144711-46850780-17a8-11eb-96f3-c47952dc1322.png"></p>
-> <p align="center">❗그림자 결함을 수정한 이미지입니다. 원문에 없어서 추가했습니다. 그림자가 좀 더 깔끔해진 것을 확인할 수 있습니다.</p>
-
----
-
-## 9.5 True Lambertian Reflection
-
----
-
-여기서 제공된 기각 메소드(rejection method)는 표면 법선 벡터를 따라 오프셋 된 단위 구의 랜덤한 점을 생성합니다.
-법선 벡터에 가까운
-This corresponds to picking directions on the hemisphere with high probability close to the normal, and a lower probability of scattering rays at grazing angles. 이 분포는 cos<sup>3</sup>(𝜙)로 스케일 됩니다. 𝜙는 법선 벡터로부터 각도입니다. 얕은 각도에 도달하는 빛은 더 넓은 영역에 퍼지므로 최종 색상에 기여도가 낮기 때문에 유용합니다.
-
-하지만, 우리는 cos(𝜙)의 분포를 가진 램버시안 분포에 관심이 있습니다. 진짜 램버시안은 법선 벡터에 가까울수록 광선 산란율이 더 크지만 분포는 일정합니다. 이는 표면 법선 벡터를 따라 오프셋 된 단위구 표면의 점을 선택하여 이루어집니다. 구에서 점을 선택하는 것은 단위구에서 점은 선택한 다음, 정규화하여 구할 수 있습니다.
-
-```cpp
-vec3 random_unit_vector() {
-  auto a = random_double(0, 2 * pi);
-  auto z = random_double(-1, 1);
-  auto r = sqrt(1 - z * z);
-  return vec3(r * cos(a), r * sin(a), z);
-}
-```
-
-**<p align="center">Listing 37:** [vec3.h] _The random_unit_vector() function</p>_
-
-<p align="center"><img src="https://raytracing.github.io/images/fig-1.10-rand-unitvec.png"></p>
-
-**<p align="center">Figure 10:** _Generating a random unit vector</p>_
-
-random_unit_vector() 함수는 기존 random_in_unit_sphere() 함수를 손쉽게 대체합니다.
-
-```cpp
-color ray_color(const ray& r, const hittable& world, int depth) {
-  hit_record rec;
-
-  // 광선 반사 제한을 초과한다면, 빛이 더 이상 모이지 않습니다.
-  if (depth <= 0)
-    return color(0, 0, 0);
-
-  if (world.hit(r, 0.001, infinity, rec)) {
-/* ************* 수정 ************ */
-    point3 target = rec.p + rec.normal + random_unit_vector();
-/* ******************************* */
-    return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
-  }
-
-  vec3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
-  return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
-}
-```
-
-**<p align="center">Listing 38:** [<span>main.</span>cc] _ray_color() with replacement diffuse</p>_
-
-렌더링 결과, 기존 이미지와 비슷한 이미지를 얻을 수 있습니다:
-
-<p align="center"><img src="https://raytracing.github.io/images/img-1.09-correct-lambertian.png"></p>
-
-**<p align="center">Image 9:** _Correct rendering of Lambertian spheres</p>_
-
-씬의 구가 매우 간단해서 두 디퓨즈 메소드의 차이점을 구분하기 어렵습니다. 하지만 두 가지 중요한 시각적 차이점을 눈치챌 수 있어야 합니다.
-
-1. 그림자가 기존보다 옅어졌습니다.
-2. 구가 기존보다 밝아졌습니다.
-
-이러한 차이점은 빛 광선의 일정한 산란때문이며, 더 적은 광선이 법선 벡터 방향으로 산란됩니다. 디퓨즈 오브젝트의 경우, 더 많은 빛이 카메라를 향해 반사되므로 더 밝게 나타납니다. 그림자의 경우, 더 적은 빛이 수직으로 반사되므로 큰 구의 부분 중 작은 구 바로 아래 부분이 더 밝습니다.
-
----
-
-## 9.6 An Alternative Diffuse Formulation
-
----
-
-이 책의 초기 램버시안 계산은 이상적인 램버시안 디퓨즈의 틀린 근사라는 것이 증명되기 전까지 오랜 시간 동안 유지되었습니다. 오랜 시간 동안 오류가 수정되지 않았던 큰 이유는, 다음과 같은 작업이 어려울 수 있기 때문입니다:
-
-1. 확률 분포가 부정확하다는 사실을 수학적으로 증명하는 것
-2. cos(𝜙) 분포가 바람직하다는(그리고 그것이 어떻게 생겼는지) 이유를 직관적으로 설명하는 것
-
-모든 물체들이 완벽하게 디퓨즈 메테리얼인 상황이 흔치 않으므로, 이러한 물체들이 빛 아래에서 어떻게 나타나는지 우리의 시각적인 직관이 제대로 형성되지 않을 수 있습니다.
-
-학습의 흥미를 위해, 직관적이고 이해하기 쉬운 디퓨즈 메소드를 담고 있습니다. 위의 두 가지 메소드에 대해, 우리는 랜덤 길이와 단위 길이의 랜덤 벡터를 가지고 있었으며, 교차점에서 법선 벡터에 의해 오프셋 됩니다. 그 벡터들이 법선 벡터로 대체되는 이유가 당장은 명확하지 않을 수 있습니다.
-
-보다 더 직관적인 접근은 법선 벡터로부터의 각도에 의존하지 않고 교차점에서 모든 각도에 대해 균일한 산란 방향을 가지는 것입니다. 많은 초기 레이 트레이싱 논문들은 이 디퓨즈 메소드를 사용했었습니다(램버시안 디퓨즈를 적용하기 전에).
-
-```cpp
-vec3 random_in_hemisphere(const vec3 &normal) {
-  vec3 in_unit_sphere = random_in_unit_sphere();
-  if (dot(in_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
-    return in_unit_sphere;
-  else
-    return -in_unit_sphere;
-}
-```
-
-**<p align="center">Listing 39:** [vec3.h] _The random_in_hemisphere(normal) function</p>_
-
-`ray_color()` 함수에 새 공식을 적용합니다:
-
-```cpp
-color ray_color(const ray& r, const hittable& world, int depth) {
-  hit_record rec;
-
-  // 광선 반사 제한을 초과한다면, 빛이 더 이상 모이지 않습니다.
-  if (depth <= 0)
-    return color(0, 0, 0);
-
-  if (world.hit(r, 0.001, infinity, rec)) {
-/* ************* 수정 ************ */
-    point3 target = rec.p + random_in_hemisphere(rec.normal);
-/* ******************************* */
-    return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
-  }
-
-  vec3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
-  return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
-}
-```
-
-**<p align="center">Listing 40:** [<span>main.</span>cc] _ray_color() with hemispherical scattering</p>_
-
-다음과 같은 이미지를 얻을 수 있습니다:
-
-<p align="center"><img src="https://raytracing.github.io/images/img-1.10-rand-hemispherical.png"></p>
-
-**<p align="center">Image 9:** _Rendering of diffuse spheres with hemispherical scattering</p>_
-
-씬은 이 책의 과정 동안 더 복잡해질 것입니다. 여기서 제공되는 서로 다른 디퓨즈 렌더러들 사이의 전환을 권장합니다. 대부분의 장면에는 불균형한 수의 디퓨즈 메테리얼이 포함됩니다. 씬의 조명에 대한 다양한 디퓨즈 메소드 효과를 이해하면 귀중한 통찰력을 얻을 수 있습니다.
+**<p align="center">Image 12:** _The gamut of our renderer, gamma-corrected</p>_
 
 ---
 
