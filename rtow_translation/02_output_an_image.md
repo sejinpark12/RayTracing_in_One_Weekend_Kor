@@ -1,9 +1,6 @@
 # 2. Output an Image
 
 ## 2.1 The PPM Image Format
-
----
-
 먼저, 이미지를 확인할 방법이 필요합니다. 가장 간단한 방법은 이미지를 파일로 저장하는 것입니다. 하지만 이미지 파일 포맷은 종류가 너무 많고, 대부분 복잡합니다. 그래서 저는 항상 일반 텍스트로 구성된 이미지 포맷인 ppm을 사용합니다. [위키피디아](https://en.wikipedia.org/wiki/Netpbm#PPM_example)에 설명이 잘 되어있습니다.
 
 <p align="center"><img src="https://raytracing.github.io/images/fig-1.01-ppm.jpg"></p>
@@ -54,9 +51,6 @@ int main() {
 ---
 
 ## 2.2 Creating an Image File
-
----
-
 파일은 표준 출력 스트림(standard output stream)으로 출력되므로, 이것을 이미지 파일로 리다이렉션해야 합니다. 일반적으로 이 작업은 커맨드 라인에서 `>` 리다이렉션 연산자를 사용하여 처리합니다.
 
 Windows에서는 아래의 명령어를 실행하여 CMake로 디버그 빌드를 합니다.
@@ -138,9 +132,6 @@ Windows에서 생성한 PPM 파일을 뷰어로 열 때 발생하는 문제가 �
 ---
 
 ## 2.3 Adding a Progress Indicator
-
----
-
 계속 진행하기 앞서, 진행 상태 표시기(progress indicator)를 추가해 봅시다. 이것은 렌더링이 오래 걸리는 경우의 진행 상황을 추적할 수 있는 간단한 방법입니다. 또한 무한 루프나 다른 문제로 인해 실행이 중단되는 것도 파악할 수 있습니다.
 
 기존 프로그램은 표준 출력 스트림(`std::cout`)에 이미지를 출력합니다. 그부분은 그대로 두고, 추가로 로그 출력 스트림(`std::log`)에 진행 상태 표시기를 출력하기로 합니다.

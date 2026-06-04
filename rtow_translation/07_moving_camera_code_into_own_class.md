@@ -1,5 +1,4 @@
 # 7. Moving Camera Code Into Its Own Class
-
 계속 진행하기 전에, 지금은 카메라와 씬 렌더링 코드를 하나의 새로운 클래스로 정리하기에 좋은 시점입니다. 새로운 클래스의 이름은 `camera` 입니다. camera 클래스는 두 가지의 중요한 역할을 합니다.
 1. 광선을 생성하여 월드로 쏘아 보냅니다.
 2. 그 광선들의 결과를 사용하여 렌더링 이미지를 생성합니다.
@@ -185,6 +184,8 @@ int main() {
 **<p align="center">Listing 40:** [<span>main</span>.cc] _The new main, using the new camera</p>_
 
 새로 리펙토링한 프로그램을 실행하여도 이전과 같은 렌더링 이미지가 출력되어야 합니다.
+
+---
 
 ## 출처
 

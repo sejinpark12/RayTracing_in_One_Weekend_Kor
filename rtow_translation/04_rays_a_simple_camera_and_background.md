@@ -1,9 +1,6 @@
 # 4. Rays, a Simple Camera, and Background
 
 ## 4.1 The ray Class
-
----
-
 모든 레이 트레이서는 ray 클래스와, 광선(ray)를 따라 어떤 색이 보이는지 계산하는 부분을 공통적으로 가지고 있습니다. 함수 $\mathbf{P}(t) = \mathbf{A} + t \mathbf{b}$ 로 광선을 표현할 수 있습니다. 위치 $\mathbf{P}$ 는 3차원 공간에서 해당 함수로 표현된 직선 상의 한 점입니다. $\mathbf{A}$ 는 광선의 원점(ray origin)이고 $\mathbf{b}$ 는 광선의 방향(ray direction)입니다. 광선 파라미터 $t$ 는 실수(real number)입니다(코드에서는 `double`). $t$ 의 값을 바꿔가며 함수 $\mathbf{P}(t)$ 에 대입하면 위치 $\mathbf{P}(t)$ 는 광선을 따라 이동합니다. 음수 $t$ 값까지 고려하면, 3차원 공간에서 그 직선 상의 어디든지 갈 수 있습니다. 양수 $t$ 값은 오로지 $\mathbf{A}$ (광선의 원점)의 앞쪽($\mathbf{b}$ 방향)으로만 이동할 수 있으며 이것을 반직선(half-line) 또는 광선(ray)라고 합니다.
 
 <p align="center"><img src="https://raytracing.github.io/images/fig-1.02-lerp.jpg"></p>
@@ -43,10 +40,9 @@ class ray {
 
 (C++에 익숙하지 않은 분들을 위해 설명하자면, `ray::origin()` 과 `ray::direction()` 두 함수 모두 const 레퍼런스(immutable reference)를 리턴합니다. 호출하는 쪽에서는 필요에 따라서 const 레퍼런스를 그대로 사용할 수도 있고, 수정 가능한 복사본을 만들어 사용할 수도 있습니다.)
 
-## 4.2 Sending Rays Into the Scene
-
 ---
 
+## 4.2 Sending Rays Into the Scene
 이제 본격적으로 레이 트레이서를 만들기 위한 준비가 끝났습니다. 레이 트레이서의 핵심은 카메라 위치에서 픽셀을 향해 광선을 보내고, 그 광선 방향에서 보이는 색을 계산하는 것입니다. 과정은 다음과 같습니다.
 
 1. 눈(카메라)에서 해당 픽셀을 통과하는 광선을 계산합니다.

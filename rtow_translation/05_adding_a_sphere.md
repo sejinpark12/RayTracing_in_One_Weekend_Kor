@@ -1,11 +1,7 @@
 # 5. Adding a Sphere
-
 이제, 레이 트레이서에 오브젝트 한 개를 추가해봅시다. 가장 먼저 추가할 수 있는 오브젝트는 일반적으로 구(Sphere)입니다. 광선이 구에 충돌하는지 판별하는 계산은 비교적 간단하기 때문입니다.
 
 ## 5.1 Ray-Sphere Intersection
-
----
-
 반지름이 $r$ 이고 원점 중심인 구의 방정식은 중요한 방정식입니다.
 
 $$ x^2 + y^2 + z^2 = r^2 $$
@@ -73,12 +69,9 @@ $$ c = (\mathbf{C} - \mathbf{Q}) \cdot (\mathbf{C} - \mathbf{Q}) - r^2 $$
 
 **<p align="center">Figure 5**: _Ray-sphere intersection results</p>_
 
-## 5.2 Creating Our First Raytraced Image
-
 ---
 
-
-
+## 5.2 Creating Our First Raytraced Image
 위의 내용을 하드코딩해 보겠습니다. z축의 -1에 작은 구 하나를 놓고 광선이 구와 교차하면 픽셀에 빨간색을 칠하도록 테스트합니다.
 
 ```cpp

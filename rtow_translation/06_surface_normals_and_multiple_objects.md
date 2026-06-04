@@ -1,7 +1,6 @@
 # 6. Surface Normals and Multiple Objects
 
 ## 6.1 Shading with Surface Normals
-
 먼저 셰이딩을 위해 표면 법선(surface normal) 벡터를 계산합니다. 이 벡터는 광선과 표면의 교차점에서 표면에 수직인 벡터입니다.
 
 코드에서 법선 벡터를 어떤 형태로 표현할지 결정해야 합니다. 법선 벡터의 길이가 임의의 길이인지, 아니면 정규화된 단위 길이인지를 결정해야 합니다.
@@ -65,7 +64,6 @@ color ray_color(const ray& r) {
 ---
 
 ## 6.2 Simplifying the Ray-Sphere Intersection Code
-
 광선-구 함수를 다시 한 번 봅시다.
 
 ```cpp
@@ -131,7 +129,6 @@ double hit_sphere(const point3& center, double radius, const ray& r) {
 ---
 
 ## 6.3 An Abstraction for Hittable Objects
-
 이제, 구가 여러 개일 경우는 어떻게 해야 할까요? 구의 배열을 사용하고 싶은 생각이 들 수 있지만, 더 깔끔한 방법은 광선이 교차할 수 있는 모든 것에 대한 "추상 클래스(abstract class)"를 만드는 것입니다. 그리고 구와 구의 리스트 둘 다 광선이 교차할 수 있는 것으로 취급합니다. 이 클래스의 이름을 정하는 것은 꽤 어려운 문제입니다. "object"라는 이름도 괜찮을 수 있지만, "object oriented" 프로그래밍이라는 용어와 헷갈릴 수 있습니다.
  "Surface"라는 이름도 자주 사용되지만, 나중에 volume(안개, 구름 같은 것들)을 다루게 될 경우에는 적절한 클래스 이름이 아닙니다. "hittable"이라는 이름은 구나 구의 리스트처럼, 광선이 교차할 수 있는 모든 것들이 공통적으로 가지는 `hit` 멤버 함수를 가장 잘 드러내는 이름입니다. 이 클래스 이름들 중 어떤 것도 마음에 들지 않지만, 여기서는 "hittable"을 사용하겠습니다.
 
@@ -219,7 +216,6 @@ class sphere : public hittable {
 ---
 
 ## 6.4 Front Faces Versus Back Faces
-
 법선 벡터에 대한 두 번째 설계 결정사항은 법선 벡터가 항상 구의 바깥 방향을 향하도록 할지 여부입니다. 현재까지 구현한 법선 벡터는 항상 구의 중심에서 교차점으로 향하므로, 바깥 방향을 향하는 법선 벡터입니다. 광선이 구의 바깥에서 안으로 들어오면서 교차하는 경우, 법선 벡터(바깥 방향)는 광선의 방향과 반대입니다. 광선이 구의 안에서 밖으로 나가면서 교차하는 경우, 법선 벡터는 항상 바깥쪽을 향하므로 광선의 방향과 같은 방향입니다. 아니면 다른 방법으로, 법선 벡터가 항상 광선의 반대 방향을 가리키도록 만들 수도 있습니다. 광선이 구의 바깥에서 안으로 들어오면서 교차한다면 법선 벡터는 바깥 방향을 가리키게 됩니다. 반대로, 광선이 구 안에서 밖으로 나가면서 교차한다면 법선 벡터는 안쪽 방향을 가리키게 됩니다.
 
 <p align="center"><img src="https://raytracing.github.io/images/fig-1.07-normal-sides.jpg"></p>
@@ -312,7 +308,6 @@ class sphere : public hittable {
 ---
 
 ## 6.5 A List of Hittable Objects
-
 우리는 광선이 교차할 수 있는 일반적인 객체인 `hittable` 를 가지고 있습니다. 이제 `hittable` 의 리스트를 저장하는 클래스를 추가할 것입니다.
 
 ```cpp
@@ -365,7 +360,6 @@ class hittable_list : public hittable {
 ---
 
 ## 6.6 Some New C++ Features
-
 C++ 프로그래머가 아니라면 실수할 수 있는 몇 가지 C++ 기능을 `hittable_list` 클래스 코드에서 사용합니다: `vector` 와 `shared_ptr` 그리고 `make_shared` 입니다.
 
 `shared_ptr<type>` 은 참조 카운팅(reference-counting)를 활용하여 할당된 특정 타입을 가리키는 포인터입니다. 이 포인터를 다른 shared pointer에 대입(대개 단순 대입)할 때마다 참조 카운트가 증가합니다. shared pointer가 스코프 범위 밖(블록이나 함수의 끝)으로 벗어나면, 참조 카운트가 감소합니다. 참조 카운트가 0이 되면 포인터가 참조했던 객체가 안전하게 삭제됩니다.
@@ -405,7 +399,6 @@ auto sphere_ptr = make_shared<sphere>(point3(0, 0, 0), 1.0);
 ---
 
 ## 6.7 Common Constants and Utility Functions
-
 몇 가지 수학 상수들을 편리하게 사용할 수 있도록 별도의 헤더 파일에 정의해 둘 필요가 있습니다. 지금 당장은 무한대(infinity)만 필요하지만 나중에 필요하게 될 pi 또한 정의할 것입니다. 유용한 공통 상수들과 앞으로 사용할 유틸리티 함수들도 여기에 같이 넣어 둘 것입니다. 이 헤더 파일의 이름을 `rtweekend.h` 이라고 하겠습니다. `rtweekend.h` 헤더 파일은 앞으로 공통 기반 헤더 파일 역할을 할 것입니다.
 
 
@@ -594,8 +587,9 @@ int main() {
 
 **<p align="center">Image 5:** _Resulting render of normals-colored sphere with ground</p>_
 
-## 6.8 An Interval Class
+---
 
+## 6.8 An Interval Class
 계속 진행하기 전에, 실수 구간(real-valued intervals)을 다루기 위한 interval 클래스를 구현하겠습니다. 실수 구간은 최솟값과 최댓값으로 표현됩니다. 앞으로 interval 클래스를 꽤 자주 사용하게 될 것입니다.
 
 ```cpp
