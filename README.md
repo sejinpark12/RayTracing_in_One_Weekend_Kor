@@ -38,7 +38,7 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
     - [9.3 Fixing Shadow Acne](./rtow_translation/09_diffuse_materials.md#93-fixing-shadow-acne)
     - [9.4 True Lambertian Reflection](./rtow_translation/09_diffuse_materials.md#94-true-lambertian-reflection)
     - [9.5 Using Gamma Correction for Accurate Color Intensity](./rtow_translation/09_diffuse_materials.md#95-using-gamma-correction-for-accurate-color-intensity)
-- **[10. Metal](./rtow_translation/10_metal.md)**
+- ✅ **[10. Metal](./rtow_translation/10_metal.md)**
     - [10.1 An Abstract Class for Materials](./rtow_translation/10_metal.md#101-an-abstract-class-for-materials)
     - [10.2 A Data Structure to Describe Ray-Object Intersections](./rtow_translation/10_metal.md#102-a-data-structure-to-describe-ray-object-intersections)
     - [10.3 Modeling Light Scatter and Reflectance](./rtow_translation/10_metal.md#103-modeling-light-scatter-and-reflectance)
