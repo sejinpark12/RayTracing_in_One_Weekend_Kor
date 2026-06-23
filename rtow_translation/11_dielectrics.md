@@ -62,15 +62,23 @@ $$ \mathbf{R'}_{\bot} =
      \frac{\eta}{\eta'} (\mathbf{R} + (\mathbf{-R} \cdot \mathbf{n}) \mathbf{n}) $$
      
 위의 식은
+
 $$\mathbf{R'}_{\bot} = \frac{\eta}{\eta'} \left(\mathbf{R} + |\mathbf{R}| \cos(\theta)\mathbf{n}\right)$$
+
 에서 $|\mathbf{R}|\cos\theta$ 를 $(-\mathbf{R})\cdot \mathbf{n}$ 로 바꾼 것뿐입니다.
 
-$\mathbf{R}$ 는 표면 안쪽으로 향하고 있고, 법선 $\mathbf{n}$은 바깥쪽을 향하므로, 입사각은 보통 $\mathbf{R}$ 자체가 아니라 $-\mathbf{R}$ 와 $\mathbf{n}$ 사이 각도로 정의합니다. 따라서 $\theta$ 는 $-\mathbf{R}$ 과 $\mathbf{n}$ 사이의 각도입니다. 
+$\mathbf{R}$ 는 표면 안쪽으로 향하고 있고, 법선 $\mathbf{n}$은 바깥쪽을 향하므로, 입사각은 보통 $\mathbf{R}$ 자체가 아니라 $-\mathbf{R}$ 와 $\mathbf{n}$ 사이 각도로 정의합니다. 따라서 $\theta$ 는 $-\mathbf{R}$ 과 $\mathbf{n}$ 사이의 각도입니다.
+
 그래서
-$$(-\mathbf{R})\cdot \mathbf{n} = |-\mathbf{R}|\,|\mathbf{n}|\,\cos\theta$$ 입니다.
+
+$$(-\mathbf{R})\cdot \mathbf{n} = |-\mathbf{R}|\,|\mathbf{n}|\,\cos\theta$$
+
+입니다.
 
 $|-\mathbf{R}| = |\mathbf{R}|$ 이고 $\mathbf{n}$ 은 단위벡터이므로
+
 $$(-\mathbf{R})\cdot \mathbf{n} = |\mathbf{R}|\cos\theta$$
+
 가 됩니다.
 
 두 수식을 다시 합치면 $\mathbf{R'}$ 를 계산하는 함수를 작성할 수 있습니다.
