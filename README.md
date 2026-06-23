@@ -45,12 +45,12 @@ Ray Tracing in One Weekend를 공부하면서 다시 한번 복습하는 느낌�
     - [10.4 Mirrored Light Reflection](./rtow_translation/10_metal.md#104-mirrored-light-reflection)
     - [10.5 A Scene with Metal Spheres](./rtow_translation/10_metal.md#105-a-scene-with-metal-spheres)
     - [10.6 Fuzzy Reflection](./rtow_translation/10_metal.md#106-fuzzy-reflection)
-- **[11. Dielectrics](./rtow_translation/11_dielectrics.md)**
-    - 11.1 Refraction
-    - 11.2 Snell's Law
-    - 11.3 Total Internal Reflection
-    - 11.4 Schlick Approximation
-    - 11.5 Modeling a Hollow Glass Sphere
+- ✅ **[11. Dielectrics](./rtow_translation/11_dielectrics.md)**
+    - [11.1 Refraction](./rtow_translation/11_dielectrics.md#111-refraction)
+    - [11.2 Snell's Law](./rtow_translation/11_dielectrics.md#112-snells-law)
+    - [11.3 Total Internal Reflection](./rtow_translation/11_dielectrics.md#113-total-internal-reflection)
+    - [11.4 Schlick Approximation](./rtow_translation/11_dielectrics.md#114-schlick-approximation)
+    - [11.5 Modeling a Hollow Glass Sphere](./rtow_translation/11_dielectrics.md#115-modeling-a-hollow-glass-sphere)
 - **[12. Positionable Camera](./rtow_translation/12_positionable_camera.md)**
     - [12.1 Camera Viewing Geometry](./rtow_translation/12_positionable_camera.md#121-camera-viewing-geometry)
     - [12.2 Positioning and Orienting the Camera](./rtow_translation/12_positionable_camera.md#122-positioning-and-orienting-the-camera)
