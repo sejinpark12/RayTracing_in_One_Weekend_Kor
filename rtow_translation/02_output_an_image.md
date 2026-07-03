@@ -14,26 +14,26 @@ ppm 파일을 출력하는 C++ 코드를 만들어봅시다.
 #include <iostream>
 
 int main() {
-    // Image
-    const int image_width = 256;
-    const int image_height = 256;
+  // Image
+  const int image_width = 256;
+  const int image_height = 256;
 
-    // Render
-    std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+  // Render
+  std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-    for (int j = 0; j < image_height; j++) {
-        for (int i = 0; i < image_width; i++) {
-            auto r = double(i) / (image_width - 1);
-            auto g = double(j) / (image_height - 1);
-            auto b = 0.0;
+  for (int j = 0; j < image_height; j++) {
+    for (int i = 0; i < image_width; i++) {
+      auto r = double(i) / (image_width - 1);
+      auto g = double(j) / (image_height - 1);
+      auto b = 0.0;
 
-            int ir = int(255.999 * r);
-            int ig = int(255.999 * g);
-            int ib = int(255.999 * b);
+      int ir = int(255.999 * r);
+      int ig = int(255.999 * g);
+      int ib = int(255.999 * b);
 
-            std::cout << ir << ' ' << ig << ' ' << ib << '\n';
-        }
+      std::cout << ir << ' ' << ig << ' ' << ib << '\n';
     }
+  }
 }
 ```
 
@@ -137,27 +137,26 @@ Windows에서 생성한 PPM 파일을 뷰어로 열 때 발생하는 문제가 �
 기존 프로그램은 표준 출력 스트림(`std::cout`)에 이미지를 출력합니다. 그부분은 그대로 두고, 추가로 로그 출력 스트림(`std::log`)에 진행 상태 표시기를 출력하기로 합니다.
 
 ```cpp
+  for (int j = 0; j < image_height; j++) {
+///////////////////////// 추가 ////////////////////////////////////////////////////////////
+    std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;  //
+//////////////////////////////////////////////////////////////////////////////////////////
+    for (int i = 0; i < image_width; i++) {
+      auto r = double(i) / (image_width - 1);
+      auto g = double(j) / (image_height - 1);
+      auto b = 0.0;
 
-    for (int j = 0; j < image_height; j++) {
-        ///////////////////////// 추가 ///////////////////////////////
-        std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
-        /////////////////////////////////////////////////////////////
-        for (int i = 0; i < image_width; i++) {
-            auto r = double(i) / (image_width - 1);
-            auto g = double(j) / (image_height - 1);
-            auto b = 0.0;
+      int ir = int(255.999 * r);
+      int ig = int(255.999 * g);
+      int ib = int(255.999 * b);
 
-            int ir = int(255.999 * r);
-            int ig = int(255.999 * g);
-            int ib = int(255.999 * b);
-
-            std::cout << ir << ' ' << ig << ' ' << ib << '\n';
-        }
+      std::cout << ir << ' ' << ig << ' ' << ib << '\n';
     }
+  }
 
-    ///////////////////////// 추가 ///////////////////////////////
-    std::clog << "\rDone.                 \n";
-    /////////////////////////////////////////////////////////////
+///////////////////////// 추가 //////////////////////////////
+  std::clog << "\rDone.                 \n";              //
+////////////////////////////////////////////////////////////
 ```
 
 **<p align="center">Listing 3:** [main<span></span>.cc] Main render loop with progress reporting</p>
