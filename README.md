@@ -1,5 +1,5 @@
 # Ray Tracing in One Weekend 번역
-*Version 4.0.2, 2025-04-25 작업중*
+*Version 4.0.2, 2025-04-25*
 
 <p align="center"><img src="https://raytracing.github.io/images/cover/CoverRTW1-small.jpg"></p>
 
